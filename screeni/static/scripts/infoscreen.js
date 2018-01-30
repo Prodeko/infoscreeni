@@ -7,9 +7,10 @@ $(document).ready(function() {
     });
 
 
-    // TODO: näytä saatu tulos
+   
     function handleQueryResult(data) {
-        console.log(data.main.temp);
+        document.getElementById("temperature").innerHTML = data.name + " " + data.main.temp + " °C";
+        console.log(data);
     }
 
 
