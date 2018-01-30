@@ -8,3 +8,6 @@ def index(request):
     ad = AdSlide.objects.first()
     #return HttpResponse("Jes")
     return render(request, "adslide.html", { 'ad': ad })
+
+def get_weather(request):
+    pass
