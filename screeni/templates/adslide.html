@@ -10,8 +10,15 @@
 {% block content %}
 {{ block.super }}
 
-<div class="container">
-  <p>TESTI</p>
+<div class="ad-container" style="background-image: url(' {{ ad.image }} ')">
+  <header>
+    <h1>{{ ad.title }}</h1>
+    <hr>
+  </header>
+
+  <div class="describtion">
+    <h2>{{ ad.description }}</h2>
+  </div>
 </div>
 
 

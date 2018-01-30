@@ -5,5 +5,6 @@ from screeni.models import *
 # Create your views here.
 
 def index(request):
+    ad = AdSlide.objects.first()
     #return HttpResponse("Jes")
-    return render(request, "index.html", {})
+    return render(request, "adslide.html", { 'ad': ad })
