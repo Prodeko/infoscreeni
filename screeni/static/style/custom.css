@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  font-style:
+}
+
+
+h1 {
+  color: blue;
+  font-size: 3rem;
+}
+
+h2 {
+  color: grey;
+  font-size: 2rem;
+}
+
+p {
+  font-size: 1rem;
+}
