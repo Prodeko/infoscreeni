@@ -20,5 +20,6 @@ from screeni import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
-    path('weather', views.weather, name='weather')
+    path('weather', views.weather, name='weather'),
+    path('food', views.food, name='food')
 ]
