@@ -6,9 +6,8 @@ import screeni.services as services
 
 # Create your views here.
 def index(request):
-    ad = AdSlide.objects.first()
-    #return HttpResponse("Jes")
-    return render(request, "adslide.html", { 'ad': ad })
+    promo = PromoSlide.objects.first()
+    return render(request, "promoslide.html", { 'promo': promo })
 
 def weather(request):
     result = services.get_weather()

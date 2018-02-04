@@ -42,9 +42,9 @@ p {
 
 
 
-/*=== AD SLIDES ===*/
+/*=== PROMO SLIDES ===*/
 
-.ad-container {
+.promo-container {
   position: absolute;
   display: block;
   width: 70%;
@@ -54,12 +54,12 @@ p {
   background-position: center center;
 }
 
-.ad-container h1 {
+.promo-container h1 {
   font-size: 5rem;
   font-weight: 800;
 }
 
-.ad-container p {
+.promo-container p {
   font-size: 3rem;
   width: 60%;
 }
@@ -68,7 +68,6 @@ p {
   position: absolute;
   top: 200px;
   right: 15%;
-
   font-size: 4rem;
   font-weight: 600;
 }

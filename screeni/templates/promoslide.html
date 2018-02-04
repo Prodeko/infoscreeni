@@ -10,16 +10,16 @@
 {% block content %}
 {{ block.super }}
 
-<div class="ad-container" style="background-image: url(' {{ ad.image }} ')">
+<div class="promo-container" style="background-image: url(' {{ promo.image }} ')">
   <div class="content">
-    <h1>{{ ad.title }}</h2>
+    <h1>{{ promo.title }}</h2>
     <hr>
-    <p>{{ ad.description }}</p>
+    <p>{{ promo.description }}</p>
   </div>
 </div>
 
 <div class="deadline">
-  {{ ad.application_deadline }}
+  {{ promo.application_deadline }}
 </div>
 
 
