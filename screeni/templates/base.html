@@ -12,6 +12,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{% static 'scripts/infoscreen.js' %}"></script>
     <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,800" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'weather/weather-icons.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/custom.css' %}">
     {% endblock %}
   </head>
@@ -23,6 +24,7 @@
 
       <div id="info-box" class="container">
         <div id="info-weather">
+          <i id="temperature-icon"></i>
           <span id="temperature"></span>
         </div>
         <div id="info-time"></div>
