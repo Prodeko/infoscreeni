@@ -6,9 +6,9 @@ $(document).ready(function() {
   });
 
   function handleQueryResult(data) {
+    /* Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1 */
     var prefix = 'wi wi-';
     var code = data.weather[0].id;
-    console.log(weatherIcons[200]);
     var icon = weatherIcons[code].icon;
 
     // If we are not in the ranges mentioned above, add a day/night prefix.

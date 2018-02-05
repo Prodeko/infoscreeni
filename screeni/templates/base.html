@@ -11,28 +11,32 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{% static 'scripts/infoscreen.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/time.js' %}"></script>
+
     <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,800" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'weather/weather-icons.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'style/custom.css' %}">
-    {% endblock %}
+    {% endblock header %}
   </head>
   <body>
     {% block content %}
 
     <div id="header">
-      <img src="{% static 'images/logo.svg' %}">
-
-      <div id="info-box" class="container">
+      <img src="{% static 'images/header.png' %}">
+      <div id="info-box">
         <div id="info-weather">
           <i id="temperature-icon"></i>
           <span id="temperature"></span>
         </div>
-        <div id="info-time"></div>
-        <div id="info-date"></div>
+        <div id="info-datetime">
+          <p id="datetime"></p>
+        </div>
       </div>
-
     </div>
-
-    {% endblock %}
+    <div class="bg" id="container">
+      {% block content-container %}
+      {% endblock content-container %}
+    </div>
+    {% endblock content %}
   </body>
 </html>

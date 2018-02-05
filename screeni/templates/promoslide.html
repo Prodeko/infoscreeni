@@ -7,7 +7,7 @@
 {{ block.super }}
 {% endblock %}
 
-{% block content %}
+{% block content-container %}
 {{ block.super }}
 
 <div class="promo-container" style="background-image: url(' {{ promo.image }} ')">
@@ -15,6 +15,9 @@
     <h1>{{ promo.title }}</h2>
     <hr>
     <p>{{ promo.description }}</p>
+    <div class="promo-img-container">
+      <img class="promo-img" src="{{ promo.image.url }}" alt="Promo image">
+    </div>
   </div>
 </div>
 
@@ -23,4 +26,4 @@
 </div>
 
 
-{% endblock %}
+{% endblock content-container %}

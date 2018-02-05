@@ -9,10 +9,13 @@
 
 {% block content %}
 {{ block.super }}
+{% for key, value in data.items %}
+    {{ key }}: {{ value }}
+{% endfor %}
 
 <div class="container">
   <p>TESTI</p>
 </div>
 
 
-{% endblock %}
+{% endblock content %}
