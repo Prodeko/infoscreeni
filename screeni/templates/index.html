@@ -1,21 +1,23 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
-{% block title %}Infoscreeni{% endblock %}
-
-{% block header %}
-{{ block.super }}
-{% endblock %}
-
 {% block content %}
 {{ block.super }}
-{% for key, value in data.items %}
-    {{ key }}: {{ value }}
-{% endfor %}
-
-<div class="container">
-  <p>TESTI</p>
-</div>
-
-
+  <div id="header">
+    <img src="{% static 'images/header.png' %}">
+    <div id="info-box">
+      <div id="info-weather">
+        <i id="temperature-icon"></i>
+        <span id="temperature"></span>
+      </div>
+      <div id="info-datetime">
+        <p id="time"></p>
+        <p id="date"></p>
+      </div>
+    </div>
+  </div>
+  <div class="background">
+    {% block slide %}
+    {% endblock slide %}
+  </div>
 {% endblock content %}

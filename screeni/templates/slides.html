@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+{% load staticfiles %}
+
+{% block slide %}
+{{ block.super }}
+
+  {% include 'contentslide.html' %}
+  {% include 'promoslide.html' %}
+
+{% endblock slide %}

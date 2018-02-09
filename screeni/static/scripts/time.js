@@ -5,7 +5,8 @@ $(document).ready(function() {
     var today = new Date();
     var date = today.toLocaleDateString();
     var time = today.toLocaleTimeString();
-    $('#datetime').html(date + "\n" + time);
+    $('#date').html(date);
+    $('#time').html(time);
     var t = setTimeout(startTime, 1000);
   }
 

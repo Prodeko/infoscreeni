@@ -1,16 +1,19 @@
 body, html {
+  margin: 0px;
+  padding: 0px;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  border: 0;
+  font-size: 100%;
+  overflow: hidden; /* Disables scroll */
+  font-family: Raleway;
 }
 
-.bg {
+.background {
     /* The image used */
     background-image: url('../images/tausta_some_valkoinen.jpg');
 
     /* Full height */
     height: 100%;
+    width: 100%;
 
     /* Center and scale the image nicely */
     background-position: center;
@@ -33,19 +36,17 @@ p {
 }
 
 
-
 /*=== HEADER ===*/
 
 #header {
-  width: 100vw;
-  height: 117px;
   position: absolute;
   overflow: overlay;
+  z-index: 9999;
 }
 
 /* Wildcard class selector: https://stackoverflow.com/questions/36579625/can-not-resize-the-icons-from-https-github-com-erikflowers-weather-icons*/
 i[class^="wi-"], i[class*=" wi-"] {
-    font-size: 25px;
+    font-size: 1.5em;
 }
 
 #header > img {
@@ -54,31 +55,50 @@ i[class^="wi-"], i[class*=" wi-"] {
   margin: 0 auto;
 }
 
-#datetime {
+#date {
   font-size: 1em;
-  white-space: pre-line;
+  margin: 0;
+}
+
+#time {
+  font-size: 2.1em;
+  margin: 0;
 }
 
 /* Move time and weather info to top left corner */
 #info-box {
-  position: relative;
-  top: -100px;
-  left: 45px;
+  position: absolute;
+  top: 20px;
+  left: 50px;
   color: white;
 }
 
+/* === SLIDES MAIN ===*/
 
+/* Slideshow container */
+.slide-container {
+  position: relative;
+  top: 155px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+/* Fading animation */
+.fade {
+  position: absolute;
+  width: 95vw;
+  transition: opacity .3s ease-in;
+}
+
+fade + fade { opacity: 0; }
 
 
 /*=== PROMO SLIDES ===*/
 
+
 .promo-container {
-  position: absolute;
+  height: 80vh;
   margin: 0 auto;
-  width: 97%;
-  left: 1.5%;
-  height: 70%;
-  top: 120px;
   border-radius: 5px;
   background:rgba(255,255,255,0.9);
   background-size: cover;
@@ -96,7 +116,6 @@ i[class^="wi-"], i[class*=" wi-"] {
 }
 
 .deadline {
-  position: absolute;
   top: 200px;
   right: 15%;
   font-size: 4rem;

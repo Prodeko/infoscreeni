@@ -2,41 +2,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{% block title %}Exercise template{% endblock %}</title>
+    <title>{% block title %}Infoscreeni{% endblock %}</title>
     {% block header %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Raleway font -->
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600" rel="stylesheet">
+    <!-- Weather icons - https://github.com/erikflowers/weather-icons -->
+    <link rel="stylesheet" type="text/css" href="{% static 'weather/weather-icons.min.css' %}">
+    <!-- Slick library for full screen carousel - https://github.com/kenwheeler/slick/ -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick-theme.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick.min.js"></script>
+    <!-- Custom css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style/custom.css' %}">
+    <!-- Custom js -->
     <script type="text/javascript" src="{% static 'scripts/infoscreen.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/time.js' %}"></script>
-
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,800" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'weather/weather-icons.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'style/custom.css' %}">
+    <script type="text/javascript" src="{% static 'scripts/scroll.js' %}"></script>
     {% endblock header %}
   </head>
   <body>
     {% block content %}
-
-    <div id="header">
-      <img src="{% static 'images/header.png' %}">
-      <div id="info-box">
-        <div id="info-weather">
-          <i id="temperature-icon"></i>
-          <span id="temperature"></span>
-        </div>
-        <div id="info-datetime">
-          <p id="datetime"></p>
-        </div>
-      </div>
-    </div>
-    <div class="bg" id="container">
-      {% block content-container %}
-      {% endblock content-container %}
-    </div>
     {% endblock content %}
   </body>
 </html>

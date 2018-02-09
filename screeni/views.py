@@ -6,8 +6,8 @@ import screeni.services as services
 
 # Create your views here.
 def index(request):
-    promo = PromoSlide.objects.first()
-    return render(request, "promoslide.html", { 'promo': promo })
+    promos = PromoSlide.objects.all()
+    return render(request, "slides.html", { 'promos': promos })
 
 def weather(request):
     result = services.get_weather()
