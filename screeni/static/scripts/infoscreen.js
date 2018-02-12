@@ -1,12 +1,32 @@
 $(document).ready(function() {
 
-  var url_weather = "/weather"
-  var url_food = "/food"
-  jQuery.getJSON(url_weather, function(data) {
+  /* https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery */
+  String.prototype.hashCode = function() {
+    if (Array.prototype.reduce) {
+      return this.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+    } else {
+      var hash = 0, i, chr, len;
+      if (this.length == 0) return hash;
+      for (i = 0, len = this.length; i < len; i++) {
+        chr   = this.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+    return hash;
+    }
+  };
+
+  String.prototype.hashCodePositive = function() {
+    return (this.hashCode() + 2147483647) + 1;
+  };
+
+  var urlWeather = "/weather"
+  var urlFood = "/food"
+  jQuery.getJSON(urlWeather, function(data) {
       handleWeatherQueryResult(data);
   });
 
-  jQuery.getJSON(url_food, function(data) {
+  jQuery.getJSON(urlFood, function(data) {
       handleFoodQueryResult(data);
   });
 
@@ -28,11 +48,64 @@ $(document).ready(function() {
   }
 
   function handleFoodQueryResult(data) {
-    for(i in data) {
-      restaurant = data[i]
-      console.log(restaurant);
+    var data = JSON.parse(data);
+    console.log(data);
+
+    $.each(data, function(r, rData) {
+        /* Setup  basic elements */
+        var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>'
+        var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>'
+        var rBody = '<div class="restaurant-body-' + r + '"></div>'
+        var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>'
+        $('.restaurant-list-container').append(rContainer);
+        $('.restaurant-container-' + r).append(rHeader);
+        $('.restaurant-container-' + r).append(rBody);
+        $('.restaurant-header-' + r).append(hoursOpen);
+
+        /* Get unique courseGroupNames */
+        var arr = [];
+        $.each(rData.menus['0'].courses, function(key, value) {
+          var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
+          arr.push(courseGroupName);
+        });
+        var courseGroupNames = unique(arr);
+
+        /* Append courseGroupName to restaurant-body */
+        $.each(courseGroupNames, function(index, name) {
+          var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>'
+          $('.restaurant-body-' + r).append(courseGroup);
+        });
+
+        /* Append courseText to corresponding group */
+        $.each(rData.menus['0'].courses, function(key, value) {
+          var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
+          var courseText = value.title.substr(value.title.indexOf(':') + 1, value.title.length);
+          var courseGroupText = '<span>' + courseText + '</span>'
+          $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
+        });
+      });
+
+      /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
+      function unique(arr) {
+        var u = {}, a = [];
+        for(var i = 0, l = arr.length; i < l; ++i){
+          if(!u.hasOwnProperty(arr[i])) {
+            a.push(arr[i]);
+            u[arr[i]] = 1;
+          }
+        }
+        return a;
+      }
+
+      /* https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript */
+      function capitalizeFirstLetter(str) {
+        if (str.length > 0) {
+          return str[0].toUpperCase() + str.substr(1).toLowerCase();
+        } else {
+          return str
+        }
+      }
     }
-  }
 
   weatherIcons = {
     "200": {

@@ -1,1 +1,2 @@
 requests==2.18.4
+Django==2.0.1
