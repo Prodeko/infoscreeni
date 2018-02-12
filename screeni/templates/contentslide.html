@@ -1,7 +1,6 @@
 {% if content %}
   <div class="content-slide-container">
-
-    {% for c in content %}
+    {% for c in context.content %}
       <div class="slide fade">
         <div class="content-container">
           <h1>{{ c.title }}</h2>

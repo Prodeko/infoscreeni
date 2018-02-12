@@ -22,7 +22,6 @@ Envin deaktivointi:
 ```
 $ pip install -r requirements.txt
 $ python manage.py makemigrations screeni && python manage.py migrate
-$ python manage.py migrate
 ```
 
 ## Ominaisuudet
