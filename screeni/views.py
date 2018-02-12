@@ -30,3 +30,21 @@ def food(request):
         return HttpResponse(data, content_type="text/javascript")
     else:
         return HttpResponse(json.dumps(result), content_type="application/json")
+
+def trello_test(request):
+    result = services.get_trello()
+    context = {}
+    context['result'] = result
+    return render(request, "trello.html", {'context':context})
+
+
+    '''
+    if request.GET.__contains("callback"):
+        jsonp_callback = request.GET["callback"]
+        result = json.dumps(result)
+        data = '%s(%s);' % (jsonp_callback, result)
+        return HttpResponse(data, content_type="text/javascript")
+    else:
+        return HttpResponse(json.dumps(result), content_type="application/json")
+    '''
+    

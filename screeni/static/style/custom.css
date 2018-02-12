@@ -158,3 +158,39 @@ fade + fade { opacity: 0; }
   font-size: 0.7em;
   color: grey;
 }
+
+/*=== TRELLO SLIDE ===*/
+
+
+
+.trello-board-container {
+  margin: auto;
+  width: 90%;
+  text-align: center;
+}
+
+.trello-board-container h2 {
+
+}
+
+.trello-list-container {
+  width: 316; /* this is the width of an individual trello card */
+  float: left;
+  padding: 5px;
+  overflow: auto;
+}
+
+.trello-list-container p {
+  margin: 10px 0px 10px 0px;
+  display: block;
+  font-size: 1.0em;
+  color: grey;
+  text-align: center;
+}
+
+
+
+.trello-card-container {
+
+  /*i.width=248,i.height=n?185:218*/
+}
