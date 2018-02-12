@@ -1,11 +1,12 @@
 {% if content %}
   <div class="content-slide-container">
+
     {% for c in content %}
       <div class="slide fade">
         <div class="content-container">
           <h1>{{ c.title }}</h2>
           <hr>
-          <p>{{ c.description }}</p>
+          <p>{{ c.description|safe }}</p>
           <div class="content-img-container">
             <img class="content-img" src="{{ p.image.url }}" alt="Content image">
           </div>

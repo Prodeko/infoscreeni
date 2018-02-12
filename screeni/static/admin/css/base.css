@@ -2,18 +2,13 @@
     DJANGO Admin styles
 */
 
-/*
-Pasted from https://raw.githubusercontent.com/django/django/master/django/contrib/admin/static/admin/css/base.css
-Customized to use Prodeko font and colors.
-*/
-
 @import url(fonts.css);
 
 body {
     margin: 0;
     padding: 0;
     font-size: 14px;
-    font-family: "Raleway","Roboto";
+    font-family: "Raleway","Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
     color: #345;
     background: #fff;
 }
@@ -452,7 +447,7 @@ select[multiple] {
 /* FORM BUTTONS */
 
 .button, input[type=submit], input[type=button], .submit-row input, a.button {
-    background: #79aec8;
+    background: #0053a0;
     padding: 10px 15px;
     border: none;
     border-radius: 4px;
@@ -649,7 +644,7 @@ div.system-message p.system-message-title {
 /* BREADCRUMBS */
 
 div.breadcrumbs {
-    background: #79aec8;
+    background: #0053a0;
     padding: 10px 40px;
     border: none;
     font-size: 14px;
@@ -888,8 +883,8 @@ table#change-history tbody th {
 
 #user-tools a:focus, #user-tools a:hover {
     text-decoration: none;
-    border-bottom-color: #79aec8;
-    color: #79aec8;
+    border-bottom-color: #0053a0;
+    color: #0053a0;
 }
 
 /* SIDEBAR */

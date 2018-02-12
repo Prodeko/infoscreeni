@@ -5,7 +5,7 @@
         <div class="promo-container">
           <h1>{{ p.title }}</h2>
           <hr>
-          <p>{{ p.description }}</p>
+          <p>{{ p.description|safe }}</p>
           <div class="promo-img-container">
             <img class="promo-img" src="{{ p.image.url }}" alt="Promo image">
           </div>

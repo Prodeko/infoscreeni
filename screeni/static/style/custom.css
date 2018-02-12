@@ -85,9 +85,9 @@ i[class^="wi-"], i[class*=" wi-"] {
   margin: 0 auto;
   height: 75vh;
   border-radius: 5px;
-  background: rgba(255,255,255,0.9);
+  /*background: rgba(255,255,255,0.9);
   background-size: cover;
-  background-position: center center;
+  background-position: center center;*/
 }
 
 /* Fading animation */

@@ -1,4 +1,5 @@
 from django.db import models
+from ckeditor_uploader.fields import RichTextUploadingField
 import datetime
 
 # Create your models here.
@@ -7,9 +8,10 @@ class PromoSlide(models.Model):
     def __str__(self):  # Changes object name on Django admin
         return self.title
     title = models.CharField(max_length=255)
-    description = models.TextField(null=True)
+    description = RichTextUploadingField()
     application_deadline = models.DateField(blank=True, null=True)
     image = models.FileField(upload_to='promo_images/', null=True)
+
 
     def get_picture_url(self):
         if self.picture:
