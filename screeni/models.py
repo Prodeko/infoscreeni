@@ -4,6 +4,8 @@ import datetime
 # Create your models here.
 
 class PromoSlide(models.Model):
+    def __str__(self):  # Changes object name on Django admin
+        return self.title
     title = models.CharField(max_length=255)
     description = models.TextField(null=True)
     application_deadline = models.DateField(blank=True, null=True)
@@ -15,6 +17,8 @@ class PromoSlide(models.Model):
         return "/static/images/no_profile.jpg"
 
 class ContentSlide(models.Model):
+    def __str__(self):  # Changes object name on Django admin
+        return self.title
     title = models.CharField(max_length=255)
     ingress = models.CharField(null=True, max_length=255)
     description = models.TextField(null=True)

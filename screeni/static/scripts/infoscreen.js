@@ -1,11 +1,16 @@
 $(document).ready(function() {
 
-  var url = "/weather"
-  jQuery.getJSON(url, function(data) {
-      handleQueryResult(data);
+  var url_weather = "/weather"
+  var url_food = "/food"
+  jQuery.getJSON(url_weather, function(data) {
+      handleWeatherQueryResult(data);
   });
 
-  function handleQueryResult(data) {
+  jQuery.getJSON(url_food, function(data) {
+      handleFoodQueryResult(data);
+  });
+
+  function handleWeatherQueryResult(data) {
     /* Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1 */
     var prefix = 'wi wi-';
     var code = data.weather[0].id;
@@ -20,6 +25,13 @@ $(document).ready(function() {
     icon = prefix + icon;
     $('#temperature-icon').addClass(icon);
     $('#temperature').html(data.name + " " + data.main.temp + " °C");
+  }
+
+  function handleFoodQueryResult(data) {
+    for(i in data) {
+      restaurant = data[i]
+      console.log(restaurant);
+    }
   }
 
   weatherIcons = {

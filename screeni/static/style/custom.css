@@ -76,17 +76,18 @@ i[class^="wi-"], i[class*=" wi-"] {
 /* === SLIDES MAIN ===*/
 
 /* Slideshow container */
-.slide-container {
+.slide {
   position: relative;
   top: 155px;
   width: 95%;
+  left: 0;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
+  right: 0;
   margin: 0 auto;
 }
 
 /* Fading animation */
 .fade {
   position: absolute;
-  width: 95vw;
   transition: opacity .3s ease-in;
 }
 
