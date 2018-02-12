@@ -26,6 +26,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'df3t-mpz-!e(*fqt-n=!yi1x_h&!t-p32++kykctp_f4%qga6g'
 WEATHER_KEY = 'f2be4bacfb81b6fb1b79ca16e7ccd1c8'
+TRELLO_KEY = 'b57172de608a187be0dc59010264f08c'
+TRELLO_TOKEN = 'c669a1727eeacdab126c30ff3422f5f9cd26b7952271f8437ce8f83332ba2d00'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

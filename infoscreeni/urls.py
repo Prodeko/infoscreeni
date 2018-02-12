@@ -24,5 +24,6 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', views.index, name='index'),
     path('weather', views.weather, name='weather'),
-    path('food', views.food, name='food')
+    path('food', views.food, name='food'),
+    path('trello',views.trello_test, name='trello' )
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
