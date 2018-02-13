@@ -4,14 +4,13 @@ from screeni.models import *
 import json
 import screeni.services as services
 
-# Create your views here.
 def index(request):
     promos = PromoSlide.objects.all()
     content = ContentSlide.objects.all()
     context = {}
     context['promos'] = promos
     context['content'] = content
-    return render(request, "slides.html", { 'promos': promos })
+    return render(request, "slides.html", { 'context': context })
 
 def weather(request):
     result = services.get_weather()
@@ -27,13 +26,19 @@ def trello_test(request):
     context['result'] = result
     return render(request, "trello.html", {'context': context})
 
+def static_slide(request, id):
+    """ Renders one slide at a time.
 
-    '''
-    if request.GET.__contains("callback"):
-        jsonp_callback = request.GET["callback"]
-        result = json.dumps(result)
-        data = '%s(%s);' % (jsonp_callback, result)
-        return HttpResponse(data, content_type="text/javascript")
-    else:
-        return HttpResponse(json.dumps(result), content_type="application/json")
-    '''
+    This view is rendered when a user presses the 'View on site' button in Django admin
+    """
+    try:
+        p_content = PromoSlide.objects.get(id=id)
+    except PromoSlide.DoesNotExist:
+        p_content = None
+
+    try:
+        c_content = ContentSlide.objects.get(id=id)
+    except ContentSlide.DoesNotExist:
+        c_content = None
+    content = p_content if p_content is not None else c_content
+    return render(request, "slide_static.html", { 'content': content})

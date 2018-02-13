@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
@@ -129,6 +130,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'screeni//static'
 
 
-# CKEDITOR settings
-
+# CKEditor settings
 CKEDITOR_UPLOAD_PATH = "uploads/"
