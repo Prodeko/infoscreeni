@@ -1,3 +1,5 @@
+{# Overrides default django admin base_site.html with Prodeko logo  #}
+
 {% extends "admin/base.html" %}
 
 {% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}

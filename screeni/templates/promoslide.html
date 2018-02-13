@@ -1,6 +1,6 @@
-{% if promos %}
+{% if context.promos %}
   <div class="promo-slide-container">
-    {% for p in promos %}
+    {% for p in context.promos %}
       <div class="slide fade">
         <div class="promo-container">
           <h1>{{ p.title }}</h2>

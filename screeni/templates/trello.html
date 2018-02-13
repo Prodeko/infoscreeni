@@ -1,32 +1,22 @@
 {% block slide %}
 
-
-<div class="slide fade">
-
-    {% if context.result %}
-        <div class="trello-board-container">
-        <h2> Mitä tekee hallitus? </h2>
-
-
+{% if context.result %}
+<div class="trello-slide-container">
+  <div class="slide fade">
+    <div class="trello-board-container">
+      <h2> Mitä tekee hallitus? </h2>
         {% for list in context.result %}
-            <div class="trello-list-container">
-                <p> {{list.list_name}} </p>
-
-            {% for card in list.content %}
-                <div class="trello-card-container">
-
-                    <blockquote class="trello-card-compact"><a href={{card.shortUrl}}>Trello Card</a></blockquote>
-
-                </div>
-            {% endfor %}
-
-
-            </div>
-        {% endfor %}
-
+        <div class="trello-list-container">
+          <p> {{list.list_name}} </p>
+          {% for card in list.content %}
+          <div class="trello-card-container">
+            <blockquote class="trello-card-compact"><a href={{card.shortUrl}}>Trello Card</a></blockquote>
+          </div>
+          {% endfor %}
         </div>
-
-    {% endif %}
-
+        {% endfor %}
+    </div>
+  </div>
 </div>
+{% endif %}
 {% endblock slide %}

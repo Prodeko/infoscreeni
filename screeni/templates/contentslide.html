@@ -1,15 +1,11 @@
-{% if content %}
+{% if context.content %}
   <div class="content-slide-container">
     {% for c in context.content %}
       <div class="slide fade">
-        <div class="content-container">
+        <div class="promo-container">
           <h1>{{ c.title }}</h2>
           <hr>
           <p>{{ c.description|safe }}</p>
-          <div class="content-img-container">
-            <img class="content-img" src="{{ p.image.url }}" alt="Content image">
-          </div>
-          <div class="deadline">{{ c.application_deadline }}</div>
         </div>
       </div>
     {% endfor %}
