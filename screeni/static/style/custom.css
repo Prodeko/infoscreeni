@@ -11,7 +11,7 @@ body, html {
     /* The image used */
     background-image: url('../images/tausta_some_valkoinen.jpg');
 
-    /* Full height */
+    /* Full height and width */
     height: 100%;
     width: 100%;
 
@@ -85,15 +85,15 @@ i[class^="wi-"], i[class*=" wi-"] {
   margin: 0 auto;
   height: 75vh;
   border-radius: 5px;
-  /*background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.9);
   background-size: cover;
-  background-position: center center;*/
+  background-position: center center;
 }
 
 /* Fading animation */
 .fade {
   position: absolute;
-  transition: opacity .3s ease-in;
+  transition: opacity .4s ease-in;
 }
 
 fade + fade { opacity: 0; }

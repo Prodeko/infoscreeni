@@ -1,5 +1,7 @@
 /*
     DJANGO Admin styles
+
+    Modified to use Raleway font and Prodeko colors
 */
 
 @import url(fonts.css);
@@ -742,8 +744,12 @@ a.deletelink:focus, a.deletelink:hover {
     padding-right: 26px;
 }
 
-.object-tools a.viewsitelink, .object-tools a.golink {
+/* CUSTOM */
+.object-tools a.viewsitelink {
+    background: #4fba32;
     background-image: url(../img/tooltag-arrowright.svg);
+    background-repeat: no-repeat;
+    background-position: right 7px center;
 }
 
 .object-tools a.addlink {

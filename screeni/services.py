@@ -5,9 +5,13 @@ import json
 import sys
 from django.conf import settings
 
-# Uses OpenWeatherMap API. For more information: https://openweathermap.org/api.
+#
 # TODO: proper error handling
 def get_weather():
+    """ Fetches daily weather information.
+
+    Uses OpenWeatherMap API. See https://openweathermap.org/api for more information.
+    """
     city_id = "643522"
     api_key = settings.WEATHER_KEY
     url = "http://api.openweathermap.org/data/2.5/weather?id=" + city_id + "&units=metric&APPID=" + api_key
@@ -15,8 +19,12 @@ def get_weather():
     weather_data = r.json()
     return weather_data
 
-# Uses https://kitchen.kanttiinit.fi API. For more information: https://github.com/Kanttiinit/kitchen.
+
 def get_food():
+    """ Fetches daily food information from Otaniemi student restaurants.
+
+    Uses https://kitchen.kanttiinit.fi API. See https://github.com/Kanttiinit/kitchen for more information.
+    """
     restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 45: "Dipoli"}
     url = "https://kitchen.kanttiinit.fi/restaurants/"
     today = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -29,14 +37,13 @@ def get_food():
         food_data[restaurant] = data
     return json.dumps(food_data)
 
-'''
-TRELLO
-# Trello API documentation: https://trello.readme.io/v1.0/reference#introduction
-'''
-
 
 # TODO: proper error handling
 def get_trello():
+    """ Fetches Trello cards from a spcefied board
+
+    Uses Trello API. See https://trello.readme.io/v1.0/reference#introduction for more information.
+    """
     api_key = settings.TRELLO_KEY
     api_token = settings.TRELLO_TOKEN
 
