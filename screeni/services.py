@@ -48,11 +48,11 @@ def get_trello():
     api_token = settings.TRELLO_TOKEN
 
     # type the name of lists to show here
-    lists_to_show = ["Backlog", "In progress", "Bugs", "In review"]
+    lists_to_show = ["Aloittamatta", "Työn alla", "Odottaa", "Valmis"]
 
     # board_id can be found from "board_url.json", e.g. "https://trello.com/b/9tKg55BM/registration-system-2017.json"
     # TODO: some better way to get this?
-    board_id = "58ebc2d4548757e5b16c1467"
+    board_id = "5a0c9c5ab664c6bcbb49d8fc"
     board_lists = get_board_lists(api_key, api_token, board_id)
 
     card_ids_to_show = []
@@ -67,7 +67,7 @@ def get_trello():
     return card_ids_to_show
 
 def get_board_lists(api_key, api_token, board_id):
-    url = "https://api.trello.com/1/boards/58ebc2d4548757e5b16c1467/lists" + "?key=" + api_key + "&" + "token=" + api_token
+    url = "https://api.trello.com/1/boards/" + board_id + "/lists?key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)

@@ -12,6 +12,7 @@ class PromoSlide(models.Model):
 
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
+    display_duration = models.DurationField(default=datetime.timedelta(seconds=10))
     description = RichTextUploadingField()  # Use CKEditor as the description text editor
 
 
@@ -26,4 +27,5 @@ class ContentSlide(models.Model):
 
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
+    display_duration = models.DurationField(default=datetime.timedelta(seconds=10))
     description = RichTextUploadingField()  # Use CKEditor as the description text editor
