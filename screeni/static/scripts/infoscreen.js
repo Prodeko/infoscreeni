@@ -27,7 +27,13 @@ $(document).ready(function() {
   });
 
   $.getJSON(urlFood, function(data) {
-      handleFoodQueryResult(data);
+
+      var today = new Date();
+      var now = today.getHours();
+
+      if(now >= 10 && now < 15) {
+        handleFoodQueryResult(data);
+      }
   });
 
   function handleWeatherQueryResult(data) {
@@ -51,14 +57,25 @@ $(document).ready(function() {
 
   function handleFoodQueryResult(data) {
     /* Parses the food JSON data to the DOM */
+
     var data = JSON.parse(data);
+
+    var rSlideContainer = '<div class="restaurant-slide-container"></div>'
+    var slideFade = '<div class="slide fade slide-restaurant"></div>'
+    var rListContainer = '<div class="restaurant-list-container"></div>'
+
+    $('.background').append(rSlideContainer);
+    $('.restaurant-slide-container').append(slideFade);
+    $('.slide-restaurant').append(rListContainer);
 
     $.each(data, function(r, rData) {
         /* Setup  basic elements */
+
         var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>'
         var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>'
         var rBody = '<div class="restaurant-body-' + r + '"></div>'
         var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>'
+
         $('.restaurant-list-container').append(rContainer);
         $('.restaurant-container-' + r).append(rHeader);
         $('.restaurant-container-' + r).append(rBody);

@@ -83,6 +83,7 @@ i[class^="wi-"], i[class*=" wi-"] {
   left: 0;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
   right: 0;
   margin: 0 auto;
+  padding: 0px 10px;
   height: 75vh;
   border-radius: 5px;
   background: rgba(255,255,255,0.9);
@@ -134,7 +135,7 @@ fade + fade { opacity: 0; }
 .restaurant-list-container {
   display: inline-grid;
   grid-template-columns: auto auto auto auto auto;
-  grid-gap: 50px 100px;
+  grid-gap: 20px 120px;
   margin-left: 20px;
 }
 

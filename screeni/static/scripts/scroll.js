@@ -6,6 +6,7 @@ $(document).ready(function () {
   slides[current].style.opacity = 1;  // Display first slide right away
 
   setInterval(function() {
+    slides = $('.slide')
     // Runs at a specified interval, changes the slides by altering their opacity
     for (var i = 0; i < slides.length; i++) {
       slides[i].style.opacity = 0;
