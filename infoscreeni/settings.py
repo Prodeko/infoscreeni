@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
+# Needed since we have 'django.contrib.sites' enabled in INSTALLED_APPS
+SITE_ID = 1
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,11 +26,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
+import configparser
+config = configparser.ConfigParser()
+config.read('secret.ini')
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'df3t-mpz-!e(*fqt-n=!yi1x_h&!t-p32++kykctp_f4%qga6g'
-WEATHER_KEY = 'f2be4bacfb81b6fb1b79ca16e7ccd1c8'
-TRELLO_KEY = 'b57172de608a187be0dc59010264f08c'
-TRELLO_TOKEN = 'c669a1727eeacdab126c30ff3422f5f9cd26b7952271f8437ce8f83332ba2d00'
+SECRET_KEY = config['DJANGO']['SECRET']
+WEATHER_KEY = config['DJANGO']['SECRET']
+TRELLO_KEY = config['TRELLO']['KEY']
+TRELLO_TOKEN = config['TRELLO']['TOKEN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

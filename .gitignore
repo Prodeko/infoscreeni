@@ -88,7 +88,9 @@ target/
 __pycache__/
 local_settings.py
 
+# Custom
 .env
 db.sqlite3
 media/
 infoscreeni/__pycache__/
+secret.ini
