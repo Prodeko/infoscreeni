@@ -40,19 +40,26 @@ $(document).ready(function() {
     /* Parses the weather JSON data to the DOM
     Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1 */
 
-    var prefix = 'wi wi-';
-    var code = data.weather[0].id;
-    var icon = weatherIcons[code].icon;
+    if (data.cod == 401) {
+      // Error handling
+      $('#temperature-icon').addClass("wi wi-na");
+      $('#temperature').html("°C");
 
-    // If we are not in the ranges mentioned above, add a day/night prefix.
-    if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
-      icon = 'day-' + icon;
+    } else {
+      var prefix = 'wi wi-';
+      var code = data.weather[0].id;
+      var icon = weatherIcons[code].icon;
+
+      // If we are not in the ranges mentioned above, add a day/night prefix.
+      if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
+        icon = 'day-' + icon;
+      }
+
+      // Finally tack on the prefix.
+      icon = prefix + icon;
+      $('#temperature-icon').addClass(icon);
+      $('#temperature').html(data.name + " " + data.main.temp + " °C");
     }
-
-    // Finally tack on the prefix.
-    icon = prefix + icon;
-    $('#temperature-icon').addClass(icon);
-    $('#temperature').html(data.name + " " + data.main.temp + " °C");
   }
 
   function handleFoodQueryResult(data) {

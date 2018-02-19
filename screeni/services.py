@@ -13,10 +13,14 @@ def get_weather():
     Uses OpenWeatherMap API. See https://openweathermap.org/api for more information.
     """
     city_id = "643522"
-    api_key = settings.WEATHER_KEY
-    url = "http://api.openweathermap.org/data/2.5/weather?id=" + city_id + "&units=metric&APPID=" + api_key
-    r = requests.get(url)
-    weather_data = r.json()
+    url = "http://api.openweathermap.org/data/2.5/weather?id=" + city_id + "&units=metric&APPID=" + settings.WEATHER_KEY
+
+    try:
+        r = requests.get(url)
+        weather_data = r.json()
+        return weather_data
+    except:
+        pass
     return weather_data
 
 
@@ -25,16 +29,20 @@ def get_food():
 
     Uses https://kitchen.kanttiinit.fi API. See https://github.com/Kanttiinit/kitchen for more information.
     """
-    restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 45: "Dipoli"}
+    restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 90: "Dipoli"}
     url = "https://kitchen.kanttiinit.fi/restaurants/"
     today = datetime.datetime.today().strftime('%Y-%m-%d')
     food_data = {}
     for id in restaurant_dict.keys():
         url_full = url + str(id) + "/menu?day=" + today
-        r = requests.get(url_full)
-        data = r.json()
-        restaurant = restaurant_dict[id]
-        food_data[restaurant] = data
+        try:
+            r = requests.get(url_full)
+            data = r.json()
+            restaurant = restaurant_dict[id]
+            food_data[restaurant] = data
+        except:
+            pass
+
     return json.dumps(food_data)
 
 
