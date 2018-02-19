@@ -39,7 +39,8 @@ def get_food():
             r = requests.get(url_full)
             data = r.json()
             restaurant = restaurant_dict[id]
-            food_data[restaurant] = data
+            if data.get("code") != 404:
+                food_data[restaurant] = data
         except:
             pass
 

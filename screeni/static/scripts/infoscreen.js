@@ -31,7 +31,7 @@ $(document).ready(function() {
       var today = new Date();
       var now = today.getHours();
 
-      if(now >= 10 && now < 15) {
+      if(now >= 10 && now < 17) {
         handleFoodQueryResult(data);
       }
   });
@@ -78,45 +78,49 @@ $(document).ready(function() {
     $.each(data, function(r, rData) {
         /* Setup  basic elements */
 
-        var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>'
-        var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>'
-        var rBody = '<div class="restaurant-body-' + r + '"></div>'
-        var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>'
+        if (rData.menus.length > 0) {  // API sometimes returns no food data for the day
+          var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>'
+          var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>'
+          var rBody = '<div class="restaurant-body-' + r + '"></div>'
+          var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>'
 
-        $('.restaurant-list-container').append(rContainer);
-        $('.restaurant-container-' + r).append(rHeader);
-        $('.restaurant-container-' + r).append(rBody);
-        $('.restaurant-header-' + r).append(hoursOpen);
+          $('.restaurant-list-container').append(rContainer);
+          $('.restaurant-container-' + r).append(rHeader);
+          $('.restaurant-container-' + r).append(rBody);
+          $('.restaurant-header-' + r).append(hoursOpen);
 
-        /* Get unique courseGroupNames */
-        var arr = [];
-        $.each(rData.menus['0'].courses, function(key, value) {
-          // Do some string manipulation to extract the menu items group
-          // example title field in the JSON: 'KASVISLOUNAS: Kasvisnuudeleita'
-          // we wish to extract the 'KASVISLOUNAS' part from this string and store
-          // it in an array.
-          var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
-          arr.push(courseGroupName);
-        });
-        // Get unique courseGroupNames
-        var courseGroupNames = unique(arr);
+          /* Get unique courseGroupNames */
+          var arr = [];
 
-        /* Append courseGroupName to restaurant-body */
-        $.each(courseGroupNames, function(index, name) {
-          // Generate a positive integer hash from the groupname
-          var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>'
-          $('.restaurant-body-' + r).append(courseGroup);
-        });
+          $.each(rData.menus['0'].courses, function(key, value) {
+            // Do some string manipulation to extract the menu items group
+            // example title field in the JSON: 'KASVISLOUNAS: Kasvisnuudeleita'
+            // we wish to extract the 'KASVISLOUNAS' part from this string and store
+            // it in an array.
+            var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
+            arr.push(courseGroupName);
+          });
+          // Get unique courseGroupNames
+          var courseGroupNames = unique(arr);
 
-        /* Append courseText to corresponding group */
-        $.each(rData.menus['0'].courses, function(key, value) {
-          var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
-          var courseText = value.title.substr(value.title.indexOf(':') + 1, value.title.length);
-          var courseGroupText = '<span>' + courseText + '</span>'
-          // Again generate the hash but this time match to the class
-          // created above and append the corresponding courseText
-          $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
-        });
+          /* Append courseGroupName to restaurant-body */
+          $.each(courseGroupNames, function(index, name) {
+            // Generate a positive integer hash from the groupname
+            var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>'
+            $('.restaurant-body-' + r).append(courseGroup);
+          });
+
+
+          /* Append courseText to corresponding group */
+          $.each(rData.menus['0'].courses, function(key, value) {
+            var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
+            var courseText = value.title.substr(value.title.indexOf(':') + 1, value.title.length);
+            var courseGroupText = '<span>' + courseText + '</span>'
+            // Again generate the hash but this time match to the class
+            // created above and append the corresponding courseText
+            $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
+          });
+        }
       });
 
       /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
