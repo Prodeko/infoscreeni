@@ -8,27 +8,22 @@ body, html {
 }
 
 .background {
-    /* The image used */
-    background-image: url('../images/tausta_some_valkoinen.jpg');
+  /* The image used */
+  background-image: url('../images/tausta_some_valkoinen.jpg');
 
-    /* Full height and width */
-    height: 100%;
-    width: 100%;
+  /* Full height and width */
+  height: 100%;
+  width: 100%;
 
-    /* Center and scale the image nicely */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-h1 {
-  color: blue;
-  font-size: 3rem;
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 h2 {
-  color: grey;
-  font-size: 2rem;
+  color: #002e7d;
+  font-size: 3rem;
 }
 
 p {
@@ -73,17 +68,35 @@ i[class^="wi-"], i[class*=" wi-"] {
   color: white;
 }
 
+/* === SIDEBAR ===*/
+
+.event-list-container th {
+  padding: 40px 25px 18px 25px;
+  font-size: 1.5em;
+  border-bottom: 1px solid #eee;
+}
+
+.event-list-container td {
+  padding: 25px;
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.change-color {
+  color: #e0423a;
+}
+
 /* === SLIDES MAIN ===*/
 
 /* Slideshow container */
 .slide {
   position: relative;
   top: 190px;
-  width: 95%;
+  width: 60%;
   left: 0;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
   right: 0;
-  margin: 0 auto;
-  padding: 0px 10px;
+  margin: 0px 20px 0px 20px;
+  padding: 0px 40px;
   height: 75vh;
   border-radius: 5px;
   background: rgba(255,255,255,0.9);
@@ -98,6 +111,21 @@ i[class^="wi-"], i[class*=" wi-"] {
 }
 
 fade + fade { opacity: 0; }
+
+.sidebar {
+  position: absolute;
+  top: 190px;
+  width: 36%;
+  left: 60%;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
+  right: 0;
+  margin: 0px 20px 0px 40px;
+  padding: 0px 30px;
+  height: 75vh;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.9);
+  background-size: cover;
+  background-position: center center;
+}
 
 
 /*=== PROMO SLIDES ===*/

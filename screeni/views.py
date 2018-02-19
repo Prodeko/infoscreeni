@@ -14,11 +14,15 @@ def index(request):
 
 def weather(request):
     result = services.get_weather()
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    return HttpResponse(json.dumps(result, ensure_ascii=False), content_type="application/json")
+
+def events(request):
+    result = services.get_events()
+    return HttpResponse(json.dumps(result, ensure_ascii=False), content_type="application/json")
 
 def food(request):
     result = services.get_food()
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    return HttpResponse(json.dumps(result, ensure_ascii=False), content_type="application/json")
 
 def trello_test(request):
     result = services.get_trello()

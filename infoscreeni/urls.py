@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('weather', views.weather, name='weather'),
     path('food', views.food, name='food'),
+    path('events', views.events, name='events'),
     path('trello', views.trello_test, name='trello' ),
     path('contentslide/<int:id>/', views.static_slide, name='content-static'),
     path('promoslide/<int:id>/', views.static_slide, name='promo-static')

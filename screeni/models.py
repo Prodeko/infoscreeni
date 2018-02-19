@@ -16,7 +16,6 @@ class PromoSlide(models.Model):
     description = RichTextUploadingField()  # Use CKEditor as the description text editor
 
 
-
 class ContentSlide(models.Model):
     def __str__(self):  # Changes object name on Django admin
         return self.title

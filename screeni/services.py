@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import requests
-import datetime
 import json
 import sys
+from bs4 import BeautifulSoup
+from datetime import datetime
 from django.conf import settings
 
-#
-# TODO: proper error handling
+
 def get_weather():
     """ Fetches daily weather information.
 
@@ -15,11 +15,13 @@ def get_weather():
     city_id = "643522"
     url = "http://api.openweathermap.org/data/2.5/weather?id=" + city_id + "&units=metric&APPID=" + settings.WEATHER_KEY
 
+    # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
     try:
         r = requests.get(url)
         weather_data = r.json()
         return weather_data
-    except:
+    except requests.exceptions.RequestException as e:
+        print(e)
         pass
     return weather_data
 
@@ -31,7 +33,7 @@ def get_food():
     """
     restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 90: "Dipoli"}
     url = "https://kitchen.kanttiinit.fi/restaurants/"
-    today = datetime.datetime.today().strftime('%Y-%m-%d')
+    today = datetime.today().strftime('%Y-%m-%d')
     food_data = {}
     for id in restaurant_dict.keys():
         url_full = url + str(id) + "/menu?day=" + today
@@ -41,13 +43,50 @@ def get_food():
             restaurant = restaurant_dict[id]
             if data.get("code") != 404:
                 food_data[restaurant] = data
-        except:
+        except requests.exceptions.RequestException as e:
+            print(e)
             pass
 
     return json.dumps(food_data)
 
 
-# TODO: proper error handling
+def get_events():
+    # TODO fix purkka... (implies making new ilmokilke)
+    """ Fetches event information from ilmo.prodeko.org
+
+    Uses BeautifulSoup (https://www.crummy.com/software/BeautifulSoup/) to parse the dom and fetch
+    relevant event information.
+    """
+    url = "http://ilmo.prodeko.org"
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+            # Parsing a table to a Python list with BeautifulSoup:
+            # https://stackoverflow.com/questions/23377533/python-beautifulsoup-parsing-table
+            soup = BeautifulSoup(r.text, 'html.parser')
+            data = []
+            # Find the main table
+            table = soup.find("table", id="open-table")
+            rows = table.find_all('tr')
+            for row in rows:
+                # Enumerate table rows
+                cols = row.find_all('td')
+                cols = [ele.text.strip() for ele in cols]
+                data.append([ele for ele in cols if ele]) # Get rid of empty values
+            data = data[1:6]
+            # Parse event time and ilmo deadline to datetime
+            # and convert back to correctly formatted string
+            for i, l in enumerate(data):
+                l[1] = datetime.strptime(l[1], '%d.%m.%Y %H:%M')
+                l[2] = datetime.strptime(l[2], '%d.%m.%Y %H:%M')
+                l[1] = datetime.strftime(l[1], '%Y-%m-%d %H:%M')
+                l[2] = datetime.strftime(l[2], '%Y-%m-%d %H:%M')
+            return data
+    except requests.exceptions.RequestException as e:
+        print(e)
+        pass
+
+
 def get_trello():
     """ Fetches Trello cards from a spcefied board
 
@@ -75,16 +114,17 @@ def get_trello():
 
     return card_ids_to_show
 
+
 def get_board_lists(api_key, api_token, board_id):
     url = "https://api.trello.com/1/boards/" + board_id + "/lists?key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)
         data = r.json()
-        return data
-    except:
-        # TODO: proper error handling
+    except requests.exceptions.RequestException as e:
+        print(e)
         pass
+
 
 def get_list_cards(api_key,api_token, list_id):
     url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=shortUrl,idList&key=" + api_key + "&" + "token=" + api_token
@@ -94,6 +134,6 @@ def get_list_cards(api_key,api_token, list_id):
         data = r.json()
         # data = list(data)
         return data
-    except:
-        # TODO: proper error handling
+    except requests.exceptions.RequestException as e:
+        print(e)
         pass

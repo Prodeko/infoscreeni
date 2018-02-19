@@ -20,8 +20,10 @@ $(document).ready(function() {
     return (this.hashCode() + 2147483647) + 1;
   };
 
-  var urlWeather = "/weather"
-  var urlFood = "/food"
+  var urlWeather = "/weather";
+  var urlFood = "/food";
+  var urlEvents = "/events";
+
   $.getJSON(urlWeather, function(data) {
       handleWeatherQueryResult(data);
   });
@@ -33,6 +35,10 @@ $(document).ready(function() {
       var i = today.getDay(); // Today's date as a number
 
       handleFoodQueryResult(data, now, i);
+  });
+
+  $.getJSON(urlEvents, function(data) {
+      handleEventQueryResult(data);
   });
 
   function handleWeatherQueryResult(data) {
@@ -61,30 +67,85 @@ $(document).ready(function() {
     }
   }
 
+  function handleEventQueryResult(data) {
+
+    $.each(data, function(i, eData) {
+
+      var event_date = moment(eData[1]);
+      var dl = moment(eData[2]);
+
+      var now = moment();
+      var duration_to_dl = moment.duration(dl.diff(now));
+      var hours_to_dl = duration_to_dl.asHours();
+
+      var duration_to_event = moment.duration(event_date.diff(now));
+      var hours_to_event = duration_to_event.asHours();
+
+      var timeFlagDl = false;
+      if (hours_to_dl < 48) {
+        dl = dl.fromNow();
+        timeFlagDl = true;
+      } else {
+        dl = dl.format('DD.MM.YYYY');
+      }
+
+      var timeFlagEventDate = false;
+      if (hours_to_event < 48) {
+        event_date = event_date.fromNow();
+        timeFlagEventDate = true;
+      } else {
+        event_date = event_date.format('DD.MM.YYYY');
+      }
+
+      var eName = eData[0]
+      var hash = eName.toLowerCase().hashCodePositive()
+
+      var eContainer = '<tr class="event-' + hash + '-container"></tr>';
+      var eName = '<td class="event-name">' + eName + '</td>';
+      var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
+      var eDate = '<td class="event-' + hash + '-time">' + event_date + '</td>';
+
+      $('.event-list-container').append(eContainer);
+      $('.event-' + hash + '-container').append(eName)
+                                        .append(eDl)
+                                        .append(eDate);
+
+      console.log(timeFlagDl)
+      if (timeFlagDl) {
+        $('.event-' + hash + '-dl').addClass('change-color');
+      }
+
+
+      if (timeFlagEventDate) {
+        $('.event-' + hash + '-time').addClass('change-color');
+      }
+    });
+  }
+
   function handleFoodQueryResult(data, now, i) {
     /* Parses the food JSON data to the DOM */
 
     var data = JSON.parse(data);
 
-    var rSlideContainer = '<div class="restaurant-slide-container"></div>'
-    var slideFade = '<div class="slide fade slide-restaurant"></div>'
-    var rListContainer = '<div class="restaurant-list-container"></div>'
+    var rSlideContainer = '<div class="restaurant-slide-container"></div>';
+    var slideFade = '<div class="slide fade slide-restaurant"></div>';
+    var rListContainer = '<div class="restaurant-list-container"></div>';
 
-    $('.background').append(rSlideContainer);
+    $('.slides').append(rSlideContainer);
     $('.restaurant-slide-container').append(slideFade);
     $('.slide-restaurant').append(rListContainer);
 
     $.each(data, function(r, rData) {
         /* Setup  basic elements */
 
-        opens = rData.openingHours[i-1].substring(0, 2)
-        closes = rData.openingHours[i-1].substring(8, 10)
+        opens = rData.openingHours[i-1].substring(0, 2);
+        closes = rData.openingHours[i-1].substring(8, 10);
 
         if (rData.menus.length > 0 && now >= opens && now < closes) {  // API sometimes returns no food data for the day
-          var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>'
-          var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>'
-          var rBody = '<div class="restaurant-body-' + r + '"></div>'
-          var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>'
+          var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>';
+          var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>';
+          var rBody = '<div class="restaurant-body-' + r + '"></div>';
+          var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>';
 
           $('.restaurant-list-container').append(rContainer);
           $('.restaurant-container-' + r).append(rHeader);
@@ -108,7 +169,7 @@ $(document).ready(function() {
           /* Append courseGroupName to restaurant-body */
           $.each(courseGroupNames, function(index, name) {
             // Generate a positive integer hash from the groupname
-            var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>'
+            var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>';
             $('.restaurant-body-' + r).append(courseGroup);
           });
 
@@ -117,7 +178,7 @@ $(document).ready(function() {
           $.each(rData.menus['0'].courses, function(key, value) {
             var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
             var courseText = value.title.substr(value.title.indexOf(':') + 1, value.title.length);
-            var courseGroupText = '<span>' + courseText + '</span>'
+            var courseGroupText = '<span>' + courseText + '</span>';
             // Again generate the hash but this time match to the class
             // created above and append the corresponding courseText
             $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
@@ -144,7 +205,7 @@ $(document).ready(function() {
         if (str.length > 0) {
           return str[0].toUpperCase() + str.substr(1).toLowerCase();
         } else {
-          return str
+          return str;
         }
       }
     }
