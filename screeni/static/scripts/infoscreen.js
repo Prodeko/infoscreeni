@@ -30,10 +30,9 @@ $(document).ready(function() {
 
       var today = new Date();
       var now = today.getHours();
+      var i = today.getDay(); // Today's date as a number
 
-      if(now >= 10 && now < 17) {
-        handleFoodQueryResult(data);
-      }
+      handleFoodQueryResult(data, now, i);
   });
 
   function handleWeatherQueryResult(data) {
@@ -62,7 +61,7 @@ $(document).ready(function() {
     }
   }
 
-  function handleFoodQueryResult(data) {
+  function handleFoodQueryResult(data, now, i) {
     /* Parses the food JSON data to the DOM */
 
     var data = JSON.parse(data);
@@ -78,7 +77,10 @@ $(document).ready(function() {
     $.each(data, function(r, rData) {
         /* Setup  basic elements */
 
-        if (rData.menus.length > 0) {  // API sometimes returns no food data for the day
+        opens = rData.openingHours[i-1].substring(0, 2)
+        closes = rData.openingHours[i-1].substring(8, 10)
+
+        if (rData.menus.length > 0 && now >= opens && now < closes) {  // API sometimes returns no food data for the day
           var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>'
           var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>'
           var rBody = '<div class="restaurant-body-' + r + '"></div>'
