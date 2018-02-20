@@ -70,6 +70,21 @@ i[class^="wi-"], i[class*=" wi-"] {
 
 /* === SIDEBAR ===*/
 
+.sidebar {
+  position: absolute;
+  top: 190px;
+  width: 32%;
+  left: 64%;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
+  right: 0;
+  margin: 0px 20px 0px 40px;
+  padding: 0px 15px;
+  height: 75vh;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.9);
+  background-size: cover;
+  background-position: center center;
+}
+
 .event-list-container th {
   padding: 40px 25px 18px 25px;
   font-size: 1.5em;
@@ -92,7 +107,7 @@ i[class^="wi-"], i[class*=" wi-"] {
 .slide {
   position: relative;
   top: 190px;
-  width: 60%;
+  width: 64%;
   left: 0;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
   right: 0;
   margin: 0px 20px 0px 20px;
@@ -111,21 +126,6 @@ i[class^="wi-"], i[class*=" wi-"] {
 }
 
 fade + fade { opacity: 0; }
-
-.sidebar {
-  position: absolute;
-  top: 190px;
-  width: 36%;
-  left: 60%;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
-  right: 0;
-  margin: 0px 20px 0px 40px;
-  padding: 0px 30px;
-  height: 75vh;
-  border-radius: 5px;
-  background: rgba(255,255,255,0.9);
-  background-size: cover;
-  background-position: center center;
-}
 
 
 /*=== PROMO SLIDES ===*/
@@ -161,9 +161,11 @@ fade + fade { opacity: 0; }
 /*=== FOOD SLIDE ===*/
 
 .restaurant-list-container {
-  display: inline-grid;
-  grid-template-columns: auto auto auto auto auto;
-  grid-gap: 20px 120px;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  grid-gap: 10px 20px;
   margin-left: 20px;
 }
 
@@ -184,6 +186,6 @@ fade + fade { opacity: 0; }
 .restaurant-list-container p {
   margin: 10px 0px 0px 0px;
   display: block;
-  font-size: 0.7em;
+  font-size: 0.6em;
   color: grey;
 }

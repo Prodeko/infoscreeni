@@ -29,16 +29,13 @@ $(document).ready(function() {
   });
 
   $.getJSON(urlFood, function(data) {
-
-      var today = new Date();
-      var now = today.getHours();
-      var i = today.getDay(); // Today's date as a number
-
-      handleFoodQueryResult(data, now, i);
+      handleFoodQueryResult(data);
   });
 
   $.getJSON(urlEvents, function(data) {
-      handleEventQueryResult(data);
+      $.when(handleEventQueryResult(data)).done(function () {
+        scroll();
+      });
   });
 
   function handleWeatherQueryResult(data) {
@@ -110,7 +107,6 @@ $(document).ready(function() {
                                         .append(eDl)
                                         .append(eDate);
 
-      console.log(timeFlagDl)
       if (timeFlagDl) {
         $('.event-' + hash + '-dl').addClass('change-color');
       }
@@ -122,11 +118,42 @@ $(document).ready(function() {
     });
   }
 
-  function handleFoodQueryResult(data, now, i) {
-    /* Parses the food JSON data to the DOM */
+  function updateAtMidnight() {
+    /* Runs every morning at 7 to update the food menus for the day */
+    var now = new Date();
+    var night = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1, // the next day, ...
+      7, 0, 0 // ...at 07:00:00 hours
+    );
+    var msToMidnight = night.getTime() - now.getTime();
 
+    setTimeout(function() {
+      $.getJSON(urlFood, function(data) {
+          handleFoodQueryResult(data);
+      });
+      $.getJSON(urlWeather, function(data) {
+          handleWeatherQueryResult(data);
+      });
+
+      $.getJSON(urlFood, function(data) {
+          handleFoodQueryResult(data);
+      });
+
+      $.getJSON(urlEvents, function(data) {
+          handleEventQueryResult(data);
+      });
+      updateAtMidnight();
+    }, msToMidnight);
+  }
+  updateAtMidnight();
+
+  function handleFoodQueryResult(data) {
+    /* Parses the food JSON data to the DOM */
     var data = JSON.parse(data);
 
+    /* Setup  basic elements */
     var rSlideContainer = '<div class="restaurant-slide-container"></div>';
     var slideFade = '<div class="slide fade slide-restaurant"></div>';
     var rListContainer = '<div class="restaurant-list-container"></div>';
@@ -136,20 +163,16 @@ $(document).ready(function() {
     $('.slide-restaurant').append(rListContainer);
 
     $.each(data, function(r, rData) {
-        /* Setup  basic elements */
 
-        opens = rData.openingHours[i-1].substring(0, 2);
-        closes = rData.openingHours[i-1].substring(8, 10);
-
-        if (rData.menus.length > 0 && now >= opens && now < closes) {  // API sometimes returns no food data for the day
-          var rContainer = '<div class="restaurant-container-' + r + ' grid-item""></div>';
+        if (rData.menus.length > 0) {  // API sometimes returns no food data for the day
+          var rContainer = '<div class="restaurant-container-' + r + ' grid-item grid-restaurant""></div>';
           var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>';
           var rBody = '<div class="restaurant-body-' + r + '"></div>';
-          var hoursOpen = '<span class="bold">' + rData.openingHours['0'] + '</span>';
+          var hoursOpen = '<span class="bold r-hours-open">' + rData.openingHours['0'] + '</span>';
 
           $('.restaurant-list-container').append(rContainer);
-          $('.restaurant-container-' + r).append(rHeader);
-          $('.restaurant-container-' + r).append(rBody);
+          $('.restaurant-container-' + r).append(rHeader)
+                                         .append(rBody);
           $('.restaurant-header-' + r).append(hoursOpen);
 
           /* Get unique courseGroupNames */
@@ -185,30 +208,83 @@ $(document).ready(function() {
           });
         }
       });
+  }
 
-      /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
-      function unique(arr) {
-        // Get unique elements in an array
-        var u = {}, a = [];
-        for(var i = 0, l = arr.length; i < l; ++i){
-          if(!u.hasOwnProperty(arr[i])) {
-            a.push(arr[i]);
-            u[arr[i]] = 1;
+  function scroll() {
+    var current = 0;
+    slides = $('.slide')
+    slides.eq(current).css('opacity', 1);  // Display first slide right away
+
+    setInterval(function() {
+      // Runs at a specified interval, changes the slides by altering their opacity
+      slides = $('.slide')
+      for (var i = 0; i < slides.length; i++) {
+        slides[i].style.opacity = 0;
+      }
+      current = (current != slides.length - 1) ? current + 1 : 0;
+
+
+      /* Handle restaurant slide updating */
+
+      var today = new Date();
+      var now = today.getHours();
+      var i = today.getDay(); // Today's date as a number (0-6)
+      i = i == 0 ? 6 : i-1;  // Convert Sunday to 6 and other dates to correct indices
+
+      if (slides[current].className.includes('slide-restaurant')) {
+        openHours = $('.r-hours-open');
+        for (var j = 0; j < openHours.length; j++) {
+          opens = openHours.eq(j).html().substring(0, 2);
+          closes = openHours.eq(j).html().substring(8, 10);
+
+          if (now >= closes) {
+            // If a restaurant has closed don't show it's menu
+            openHours.eq(j)
+            .closest(".grid-item")
+            .fadeOut(900, function() { $(this).remove(); });
           }
         }
-        return a;
-      }
 
-      /* https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript */
-      function capitalizeFirstLetter(str) {
-        // Capitalize only the first letter of a string
-        if (str.length > 0) {
-          return str[0].toUpperCase() + str.substr(1).toLowerCase();
-        } else {
-          return str;
+        // Finally check if all restaurants have closed
+        var all = true;
+        $('.grid-restaurant').each( function(index, value) {
+          all = all & ($(value).length > 0);
+        });
+        if (!all) {
+          $('.grid-restaurant')
+          .closest(".restaurant-slide-container")
+          .remove();
+          // Move on to the next slide
+          current = (current != slides.length - 1) ? current + 1 : 0;
         }
       }
+
+      slides[current].style.opacity = 1;
+    }, 2000);
+  };
+
+  /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
+  function unique(arr) {
+    // Get unique elements in an array
+    var u = {}, a = [];
+    for(var i = 0, l = arr.length; i < l; ++i){
+      if(!u.hasOwnProperty(arr[i])) {
+        a.push(arr[i]);
+        u[arr[i]] = 1;
+      }
     }
+    return a;
+  }
+
+  /* https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript */
+  function capitalizeFirstLetter(str) {
+    // Capitalize only the first letter of a string
+    if (str.length > 0) {
+      return str[0].toUpperCase() + str.substr(1).toLowerCase();
+    } else {
+      return str;
+    }
+  }
 
   weatherIcons = {
     "200": {

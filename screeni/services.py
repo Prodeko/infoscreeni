@@ -31,7 +31,7 @@ def get_food():
 
     Uses https://kitchen.kanttiinit.fi API. See https://github.com/Kanttiinit/kitchen for more information.
     """
-    restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 90: "Dipoli"}
+    restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 45: "Dipoli"}
     url = "https://kitchen.kanttiinit.fi/restaurants/"
     today = datetime.today().strftime('%Y-%m-%d')
     food_data = {}
