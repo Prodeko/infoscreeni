@@ -94,3 +94,5 @@ db.sqlite3
 media/
 infoscreeni/__pycache__/
 secret.ini
+infoscreen_env/
+screeni/migrations/
