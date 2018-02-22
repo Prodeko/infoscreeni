@@ -4,6 +4,7 @@ from screeni.models import *
 import json
 import screeni.services as services
 
+
 def index(request):
     promos = PromoSlide.objects.all()
     content = ContentSlide.objects.all()
@@ -35,6 +36,7 @@ def static_slide(request, id):
 
     This view is rendered when a user presses the 'View on site' button in Django admin
     """
+
     try:
         p_content = PromoSlide.objects.get(id=id)
     except PromoSlide.DoesNotExist:
@@ -44,5 +46,6 @@ def static_slide(request, id):
         c_content = ContentSlide.objects.get(id=id)
     except ContentSlide.DoesNotExist:
         c_content = None
+
     content = p_content if p_content is not None else c_content
     return render(request, "slide_static.html", { 'content': content})

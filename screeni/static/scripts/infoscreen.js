@@ -1,7 +1,19 @@
 $(document).ready(function() {
 
-  /* https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery */
+  /* Global variables */
+  var WEATHER_TIMEOUT = 100000; // 100 seconds
+  var FOOD_TIMEOUT = 1800000; // 30 minutes
+  var EVENT_TIMEOUT = 1800000; // 30 minutes
+  var SLIDE_TIMEOUT = 2000;
+
+  var urlWeather = "/weather";
+  var urlFood = "/food";
+  var urlEvents = "/events";
+
   String.prototype.hashCode = function() {
+    /* https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery */
+    /* Hashing function used to generate unique classes to divs */
+
     if (Array.prototype.reduce) {
       return this.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
     } else {
@@ -17,29 +29,51 @@ $(document).ready(function() {
   };
 
   String.prototype.hashCodePositive = function() {
+    /* Generates a positive integer hash */
+
     return (this.hashCode() + 2147483647) + 1;
   };
 
-  var urlWeather = "/weather";
-  var urlFood = "/food";
-  var urlEvents = "/events";
+  function updateAll() {
+    /* Updates all API based information */
 
-  $.getJSON(urlWeather, function(data) {
-      handleWeatherQueryResult(data);
-  });
+    $.getJSON(urlWeather, function(data) {
+        handleWeatherQueryResult(data);
+    });
+    $.getJSON(urlFood, function(data) {
+        handleFoodQueryResult(data);
+    });
+    $.getJSON(urlEvents, function(data) {
+        $.when(handleEventQueryResult(data)).done(function () {
+          scroll();
+        });
+    });
 
-  $.getJSON(urlFood, function(data) {
-      handleFoodQueryResult(data);
-  });
-
-  $.getJSON(urlEvents, function(data) {
-      $.when(handleEventQueryResult(data)).done(function () {
-        scroll();
+    setInterval(function() {
+      $.getJSON(urlWeather, function(data) {
+          handleWeatherQueryResult(data);
       });
-  });
+    }, WEATHER_TIMEOUT);
+
+    setInterval(function() {
+      $.getJSON(urlFood, function(data) {
+          handleFoodQueryResult(data);
+      });
+    }, FOOD_TIMEOUT);
+
+    setInterval(function() {
+      $.getJSON(urlEvents, function(data) {
+          $.when(handleEventQueryResult(data)).done(function () {
+            scroll();
+          });
+      });
+    }, EVENT_TIMEOUT);
+  }
+  updateAll();
+
 
   function handleWeatherQueryResult(data) {
-    /* Parses the weather JSON data to the DOM
+    /* Parses weather JSON data to the DOM
     Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1 */
 
     if (data.cod == 401) {
@@ -64,93 +98,10 @@ $(document).ready(function() {
     }
   }
 
-  function handleEventQueryResult(data) {
-
-    $.each(data, function(i, eData) {
-
-      var event_date = moment(eData[1]);
-      var dl = moment(eData[2]);
-
-      var now = moment();
-      var duration_to_dl = moment.duration(dl.diff(now));
-      var hours_to_dl = duration_to_dl.asHours();
-
-      var duration_to_event = moment.duration(event_date.diff(now));
-      var hours_to_event = duration_to_event.asHours();
-
-      var timeFlagDl = false;
-      if (hours_to_dl < 48) {
-        dl = dl.fromNow();
-        timeFlagDl = true;
-      } else {
-        dl = dl.format('DD.MM.YYYY');
-      }
-
-      var timeFlagEventDate = false;
-      if (hours_to_event < 48) {
-        event_date = event_date.fromNow();
-        timeFlagEventDate = true;
-      } else {
-        event_date = event_date.format('DD.MM.YYYY');
-      }
-
-      var eName = eData[0]
-      var hash = eName.toLowerCase().hashCodePositive()
-
-      var eContainer = '<tr class="event-' + hash + '-container"></tr>';
-      var eName = '<td class="event-name">' + eName + '</td>';
-      var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
-      var eDate = '<td class="event-' + hash + '-time">' + event_date + '</td>';
-
-      $('.event-list-container').append(eContainer);
-      $('.event-' + hash + '-container').append(eName)
-                                        .append(eDl)
-                                        .append(eDate);
-
-      if (timeFlagDl) {
-        $('.event-' + hash + '-dl').addClass('change-color');
-      }
-
-
-      if (timeFlagEventDate) {
-        $('.event-' + hash + '-time').addClass('change-color');
-      }
-    });
-  }
-
-  function updateAtMidnight() {
-    /* Runs every morning at 7 to update the food menus for the day */
-    var now = new Date();
-    var night = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1, // the next day, ...
-      7, 0, 0 // ...at 07:00:00 hours
-    );
-    var msToMidnight = night.getTime() - now.getTime();
-
-    setTimeout(function() {
-      $.getJSON(urlFood, function(data) {
-          handleFoodQueryResult(data);
-      });
-      $.getJSON(urlWeather, function(data) {
-          handleWeatherQueryResult(data);
-      });
-
-      $.getJSON(urlFood, function(data) {
-          handleFoodQueryResult(data);
-      });
-
-      $.getJSON(urlEvents, function(data) {
-          handleEventQueryResult(data);
-      });
-      updateAtMidnight();
-    }, msToMidnight);
-  }
-  updateAtMidnight();
 
   function handleFoodQueryResult(data) {
     /* Parses the food JSON data to the DOM */
+
     var data = JSON.parse(data);
 
     /* Setup  basic elements */
@@ -210,7 +161,66 @@ $(document).ready(function() {
       });
   }
 
+
+  function handleEventQueryResult(data) {
+    /* Parses event JSON data to the DOM */
+
+    $.each(data, function(i, eData) {
+
+      var event_date = moment(eData[1]);
+      var dl = moment(eData[2]);
+
+      var now = moment();
+      var duration_to_dl = moment.duration(dl.diff(now));
+      var hours_to_dl = duration_to_dl.asHours();
+
+      var duration_to_event = moment.duration(event_date.diff(now));
+      var hours_to_event = duration_to_event.asHours();
+
+      var timeFlagDl = false;
+      if (hours_to_dl < 48) {
+        dl = dl.fromNow();
+        timeFlagDl = true;
+      } else {
+        dl = dl.format('DD.MM.YYYY');
+      }
+
+      var timeFlagEventDate = false;
+      if (hours_to_event < 48) {
+        event_date = event_date.fromNow();
+        timeFlagEventDate = true;
+      } else {
+        event_date = event_date.format('DD.MM.YYYY');
+      }
+
+      var eName = eData[0]
+      var hash = eName.toLowerCase().hashCodePositive()
+
+      var eContainer = '<tr class="event-' + hash + '-container"></tr>';
+      var eName = '<td class="event-name">' + eName + '</td>';
+      var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
+      var eDate = '<td class="event-' + hash + '-time">' + event_date + '</td>';
+
+      $('.event-list-container').append(eContainer);
+      $('.event-' + hash + '-container').append(eName)
+                                        .append(eDl)
+                                        .append(eDate);
+
+      if (timeFlagDl) {
+        $('.event-' + hash + '-dl').addClass('change-color');
+      }
+
+
+      if (timeFlagEventDate) {
+        $('.event-' + hash + '-time').addClass('change-color');
+      }
+    });
+  }
+
+
   function scroll() {
+    /* Cycles slides */
+
     var current = 0;
     slides = $('.slide')
     slides.eq(current).css('opacity', 1);  // Display first slide right away
@@ -218,11 +228,16 @@ $(document).ready(function() {
     setInterval(function() {
       // Runs at a specified interval, changes the slides by altering their opacity
       slides = $('.slide')
+
+      // Just in case...
+      if (current > slides.length) {
+        current = 0
+      }
+
       for (var i = 0; i < slides.length; i++) {
-        slides[i].style.opacity = 0;
+        slides.eq(current).css('opacity', 0);
       }
       current = (current != slides.length - 1) ? current + 1 : 0;
-
 
       /* Handle restaurant slide updating */
 
@@ -231,7 +246,7 @@ $(document).ready(function() {
       var i = today.getDay(); // Today's date as a number (0-6)
       i = i == 0 ? 6 : i-1;  // Convert Sunday to 6 and other dates to correct indices
 
-      if (slides[current].className.includes('slide-restaurant')) {
+      if (slides.eq(current).hasClass('slide-restaurant')) {
         openHours = $('.r-hours-open');
         for (var j = 0; j < openHours.length; j++) {
           opens = openHours.eq(j).html().substring(0, 2);
@@ -259,13 +274,26 @@ $(document).ready(function() {
         }
       }
 
-      slides[current].style.opacity = 1;
-    }, 2000);
+      /* Handle expired slides */
+
+      expr = $("div[class*='expires-']").each(function(i, obj) {  // Select all divs that contain the class 'expires-'
+        var now = moment();
+        var date_str = $(obj).attr('class').split(' ').pop().substring(8, 27) // Get the last class of each div in a form 'DD/MM/YYYY-HH.mm.ss'
+        var expr_datetime = moment(date_str, "DD/MM/YYYY-HH.mm.ss") // Use moment js to parse the date string
+
+        // If time now exceeds the expiration time, remove the slide
+        if (now > expr_datetime) {
+          $(obj).fadeOut(900, function() { $(this).remove(); });
+        }
+      });
+
+      slides.eq(current).css('opacity', 1);
+    }, SLIDE_TIMEOUT);
   };
 
-  /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
   function unique(arr) {
     // Get unique elements in an array
+    /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
     var u = {}, a = [];
     for(var i = 0, l = arr.length; i < l; ++i){
       if(!u.hasOwnProperty(arr[i])) {
@@ -276,9 +304,9 @@ $(document).ready(function() {
     return a;
   }
 
-  /* https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript */
   function capitalizeFirstLetter(str) {
     // Capitalize only the first letter of a string
+    /* https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript */
     if (str.length > 0) {
       return str[0].toUpperCase() + str.substr(1).toLowerCase();
     } else {

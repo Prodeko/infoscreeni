@@ -32,7 +32,7 @@ config.read('secret.ini')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config['DJANGO']['SECRET']
-WEATHER_KEY = config['DJANGO']['SECRET']
+WEATHER_KEY = config['WEATHER']['APPID']
 TRELLO_KEY = config['TRELLO']['KEY']
 TRELLO_TOKEN = config['TRELLO']['TOKEN']
 

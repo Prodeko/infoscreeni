@@ -109,7 +109,7 @@ def get_trello():
             list_id = l["id"]
             cards = {}
             cards["list_name"] = l["name"]
-            cards["content"] = get_list_cards(api_key,api_token,list_id)
+            cards["content"] = get_list_cards(api_key, api_token, list_id)
             card_ids_to_show.append(cards)
 
     return card_ids_to_show
@@ -118,21 +118,25 @@ def get_trello():
 def get_board_lists(api_key, api_token, board_id):
     url = "https://api.trello.com/1/boards/" + board_id + "/lists?key=" + api_key + "&" + "token=" + api_token
 
+    print(url)
+
     try:
         r = requests.get(url)
         data = r.json()
+        return data
     except requests.exceptions.RequestException as e:
         print(e)
         pass
 
 
 def get_list_cards(api_key,api_token, list_id):
-    url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=shortUrl,idList&key=" + api_key + "&" + "token=" + api_token
+    url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=all&key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)
         data = r.json()
-        # data = list(data)
+        with open('result.json', 'a') as f:
+            f.write(str(data))
         return data
     except requests.exceptions.RequestException as e:
         print(e)

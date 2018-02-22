@@ -1,7 +1,7 @@
 {% if context.content %}
   <div class="content-slide-container">
     {% for c in context.content %}
-      <div class="slide fade">
+      <div class="slide fade expires-{{c.expires_at|date:"d/m/Y-H.i.s"}}">
         <div class="content-container">
           <h2>{{ c.title }}</h2>
           <hr>

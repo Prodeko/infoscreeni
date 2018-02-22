@@ -11,6 +11,8 @@ class PromoSlide(models.Model):
         return "promoslide/%i/" % self.id
 
     id = models.AutoField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
     title = models.CharField(max_length=255)
     display_duration = models.DurationField(default=datetime.timedelta(seconds=10))
     description = RichTextUploadingField()  # Use CKEditor as the description text editor
@@ -25,6 +27,8 @@ class ContentSlide(models.Model):
         return "contentslide/%i/" % self.id
 
     id = models.AutoField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
     title = models.CharField(max_length=255)
     display_duration = models.DurationField(default=datetime.timedelta(seconds=10))
     description = RichTextUploadingField()  # Use CKEditor as the description text editor
