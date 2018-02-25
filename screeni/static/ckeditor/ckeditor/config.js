@@ -6,6 +6,4 @@
 CKEDITOR.editorConfig = function( config ) {
 	// Define changes to default configuration here. For example:
 	config.language = 'fi';
-  config.removeButtons = 'Flash,Anchor,SpecialChar,Smiley';
-	// config.uiColor = '#AADC6E';
 };

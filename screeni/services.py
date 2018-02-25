@@ -22,8 +22,7 @@ def get_weather():
         return weather_data
     except requests.exceptions.RequestException as e:
         print(e)
-        pass
-    return weather_data
+
 
 
 def get_food():
@@ -45,9 +44,27 @@ def get_food():
                 food_data[restaurant] = data
         except requests.exceptions.RequestException as e:
             print(e)
-            pass
 
     return json.dumps(food_data)
+
+def get_gifs():
+    """ Fetches a party gif for Friday
+
+    Uses https://api.giphy.com API. See https://developers.giphy.com/docs/ for more information.
+    """
+    search_term = "friday"
+    url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=20"
+
+    # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
+    try:
+        r = requests.get(url)
+        giphy_data = r.json()
+        url_list = []
+        for data in giphy_data['data']:
+            url_list.append(data['embed_url'])
+        return url_list
+    except requests.exceptions.RequestException as e:
+        print(e)
 
 
 def get_events():
@@ -84,8 +101,6 @@ def get_events():
             return data
     except requests.exceptions.RequestException as e:
         print(e)
-        pass
-
 
 def get_trello():
     """ Fetches Trello cards from a spcefied board
@@ -118,26 +133,20 @@ def get_trello():
 def get_board_lists(api_key, api_token, board_id):
     url = "https://api.trello.com/1/boards/" + board_id + "/lists?key=" + api_key + "&" + "token=" + api_token
 
-    print(url)
-
     try:
         r = requests.get(url)
         data = r.json()
         return data
     except requests.exceptions.RequestException as e:
         print(e)
-        pass
 
 
 def get_list_cards(api_key,api_token, list_id):
-    url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=all&key=" + api_key + "&" + "token=" + api_token
+    url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=name,labels&key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)
-        data = r.json()
-        with open('result.json', 'a') as f:
-            f.write(str(data))
+        data = r.json()[:5] # Don't get all of the cards
         return data
     except requests.exceptions.RequestException as e:
         print(e)
-        pass

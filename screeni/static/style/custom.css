@@ -1,3 +1,7 @@
+element {
+  --main-bg-color: brown;
+}
+
 body, html {
   margin: 0px;
   padding: 0px;
@@ -24,6 +28,7 @@ body, html {
 h2 {
   color: #002e7d;
   font-size: 3rem;
+  margin-top: 21px;
 }
 
 p {
@@ -34,7 +39,7 @@ p {
 /*=== HEADER ===*/
 
 #header {
-  position: absolute;
+  position: fixed;
   overflow: overlay;
   z-index: 9999;
 }
@@ -78,7 +83,7 @@ i[class^="wi-"], i[class*=" wi-"] {
   right: 0;
   margin: 0px 20px 0px 40px;
   padding: 0px 15px;
-  height: 75vh;
+  height: 77vh;
   border-radius: 5px;
   background: rgba(255,255,255,0.9);
   background-size: cover;
@@ -99,12 +104,13 @@ i[class^="wi-"], i[class*=" wi-"] {
 
 .change-color {
   color: #e0423a;
+  font-weight: bold;
 }
 
 /* === SLIDES MAIN ===*/
 
 /* Slideshow container */
-.slide {
+.mainslide {
   position: relative;
   top: 190px;
   width: 64%;
@@ -112,7 +118,7 @@ i[class^="wi-"], i[class*=" wi-"] {
   right: 0;
   margin: 0px 20px 0px 20px;
   padding: 0px 40px;
-  height: 75vh;
+  height: 77vh;
   border-radius: 5px;
   background: rgba(255,255,255,0.9);
   background-size: cover;
@@ -188,4 +194,186 @@ fade + fade { opacity: 0; }
   display: block;
   font-size: 0.6em;
   color: grey;
+}
+
+
+/*=== TRELLO SLIDE ===*/
+
+.slide-trello {
+  width: 97.4%;
+  padding: 0px;
+}
+
+.trello-slide-container {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 40px 50px 1fr;
+  color: #eee;
+}
+
+.navbar {
+  padding-left: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.navbar.app {
+  background-color: #002e7d;
+  font-size: 1.2rem;
+  border-radius: 2px;
+  margin-bottom: 5px;
+}
+
+.lists {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.lists > * {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  margin-left: 10px;
+}
+.lists::after {
+  content: '';
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 10px;
+          flex: 0 0 10px;
+}
+
+.trello-list-container {
+  width: 350px;
+  height: calc(100% - 10px - 17px);
+}
+.trello-list-container > * {
+  background-color: #e2e4e6;
+  color: #333;
+  padding: 0 10px 10px 10px;
+}
+.trello-list-container header {
+  line-height: 36px;
+  font-size: 16px;
+  font-weight: bold;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.trello-list-container ul {
+  list-style: none;
+  margin: 0;
+  max-height: calc(100% - 36px - 36px);
+}
+.trello-list-container li > p {
+  font-size: 1.4em;
+}
+.trello-list-container ul li {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.trello-list-container ul li:not(:last-child) {
+  margin-bottom: 10px;
+}
+.trello-list-containerxy ul li img {
+  display: block;
+  width: calc(100% + 2 * 10px);
+  margin: -10px 0 10px -10px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+/* LABELS */
+
+span[class^="trello-label-"] {
+  padding: 0 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.8em;
+}
+
+.trello-label-pink {
+  background-color: #ff80ce;
+}
+
+.trello-label-sky {
+  background-color: #00c2e0;
+}
+
+.trello-label-red {
+  background-color: #eb5a46;
+}
+
+.trello-label-purple {
+  background-color: #c377e0;
+}
+
+.trello-label-blue {
+  background-color: #0079bf;
+}
+
+.trello-label-green {
+  background-color: #61bd4f;
+}
+
+.trello-label-orange {
+  background-color: #ffab4a;
+}
+
+.trello-label-black {
+  background-color: #4d4d4d;
+}
+
+.trello-label-lime {
+  background-color: #51e898;
+}
+
+/*=== GIF ===*/
+
+#gif-container {
+
+  text-align: center;
+  height: 90%;
+  width: 80vw;
+  margin: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10000;
+}
+
+iframe {
+   width: 600px;
+   height: 100%;
+}
+
+#gif-container {
+  background-image: url('../images/tausta_some_valkoinen.jpg');
+  border-radius: 5px;
+  box-shadow: 0 10px 6px -6px #777;
+}
+
+#gif-container h1 {
+  margin: 50px 0 50px 0;
+}
+
+.carousel-inner {
+  margin: 0 10px 0 10px;
+}
+
+.carousel-item {
+  height: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#emoji {
+  font-size: 2em;
 }

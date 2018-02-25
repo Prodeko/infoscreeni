@@ -5,9 +5,12 @@
 {{ block.super }}
 
   <div class="slides">
-  {% include 'contentslide.html' %}
-  {% include 'promoslide.html' %}
   {% include 'trello.html' %}
+  {% include 'slide.html' %}
   </div>
+
+  {% if context.gif %}
+    {% include 'gif_carousel.html' %}
+  {% endif %}
 
 {% endblock slides %}

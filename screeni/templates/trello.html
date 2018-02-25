@@ -1,18 +1,31 @@
-{% if context.result %}
+{% if context.trello %}
+{% comment %}
+  Modified version of https://codepen.io/SitePoint/pen/brmXRX
+  and https://www.sitepoint.com/building-trello-layout-css-grid-flexbox/
+{% endcomment %}
 <div class="trello-slide-container">
-  <div class="slide fade">
+  <div class="mainslide slide-trello fade">
     <div class="trello-board-container">
-      <h2> Mitä tekee hallitus? </h2>
-        {% for list in context.result %}
-        <div class="trello-list-container">
-          <p> {{list.list_name}} </p>
-          {% for card in list.content %}
-          <div class="trello-card-container">
-            <blockquote class="trello-card-compact"><a href={{card.shortUrl}}>Trello Card</a></blockquote>
+      <div class="ui">
+        <nav class="navbar app">Hallituksen Trello</nav>
+        <div class="lists">
+          {% for list in context.trello %}
+          <div class="trello-list-container">
+            <header>{{list.list_name}}</header>
+            <ul>
+              {% for content in list.content %}
+                <li>
+                  {% for label in content.labels %}
+                    <span class="trello-label-{{ label.color }}">{{ label.name }}</span>
+                  {% endfor %}
+                  <p>{{content.name}}</p>
+                </li>
+              {% endfor %}
+            </ul>
           </div>
           {% endfor %}
         </div>
-        {% endfor %}
+      </div>
     </div>
   </div>
 </div>

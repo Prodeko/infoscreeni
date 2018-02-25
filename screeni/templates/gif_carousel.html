@@ -1,0 +1,12 @@
+<div id="gif-container">
+  <h1 id="perjantai">Perjantai gif &#x1F601</h1>
+  <div class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+      {% for gif in context.gif %}
+      <div class="carousel-item">
+        <iframe class="d-block w-100" src="{{gif}}" frameBorder="0" allowFullScreen></iframe>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

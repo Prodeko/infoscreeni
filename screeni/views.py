@@ -1,16 +1,28 @@
-from django.shortcuts import render
+from django.core import serializers
 from django.http import HttpResponse
+from django.shortcuts import render
+from django.utils import timezone
 from screeni.models import *
 import json
 import screeni.services as services
 
-
 def index(request):
-    promos = PromoSlide.objects.all()
-    content = ContentSlide.objects.all()
+    now = timezone.now()
+    if request.is_ajax():
+        content = Slide.objects.filter(expires_at__gte=now)
+        content = serializers.serialize('json', content)
+
+        return HttpResponse(content, content_type="application/json")
+
+    # Don't display expired slides
+    content = Slide.objects.filter(expires_at__gte=now)
+    trello = services.get_trello()
+    gif = services.get_gifs()
+
     context = {}
-    context['promos'] = promos
     context['content'] = content
+    context['trello'] = trello
+    context['gif'] = gif
     return render(request, "slides.html", { 'context': context })
 
 def weather(request):
@@ -25,27 +37,18 @@ def food(request):
     result = services.get_food()
     return HttpResponse(json.dumps(result, ensure_ascii=False), content_type="application/json")
 
-def trello_test(request):
+def trello(request):
     result = services.get_trello()
-    context = {}
-    context['result'] = result
-    return render(request, "trello.html", {'context': context})
+    return HttpResponse(json.dumps(result, ensure_ascii=False), content_type="application/json")
+
+def gif(request):
+    result = services.get_gifs()
+    return HttpResponse(json.dumps(result, ensure_ascii=False), content_type="application/json")
 
 def static_slide(request, id):
     """ Renders one slide at a time.
 
     This view is rendered when a user presses the 'View on site' button in Django admin
     """
-
-    try:
-        p_content = PromoSlide.objects.get(id=id)
-    except PromoSlide.DoesNotExist:
-        p_content = None
-
-    try:
-        c_content = ContentSlide.objects.get(id=id)
-    except ContentSlide.DoesNotExist:
-        c_content = None
-
-    content = p_content if p_content is not None else c_content
+    content = Slide.objects.get(id=id)
     return render(request, "slide_static.html", { 'content': content})

@@ -5,12 +5,14 @@
 {{ block.super }}
 
 {% if content %}
-<div class="promo-slide-container">
-  <div class="slide fade">
-    <div class="promo-container">
+<div class="slide-container">
+  <div class="mainslide fade">
+    <div class="content-container">
       <h2>{{ content.title }}</h2>
       <hr>
-      <p>{{ content.description|safe }}</p>
+      <div class="description-wrapper">
+        <p>{{ content.description|safe }}</p>
+      </div>
     </div>
   </div>
 </div>

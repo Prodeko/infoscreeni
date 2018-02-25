@@ -35,6 +35,7 @@ SECRET_KEY = config['DJANGO']['SECRET']
 WEATHER_KEY = config['WEATHER']['APPID']
 TRELLO_KEY = config['TRELLO']['KEY']
 TRELLO_TOKEN = config['TRELLO']['TOKEN']
+GIPHY_KEY = config['GIPHY']['KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -122,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Helsinki'
 
 USE_I18N = True
 
@@ -139,3 +140,13 @@ STATIC_ROOT = 'screeni//static'
 
 # CKEditor settings
 CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': [["Format", "Styles" "Bold", "Italic", "Underline", "Strike"],
+                ['NumberedList', 'BulletedList', "Indent", "Outdent", 'JustifyLeft', 'JustifyCenter',
+                 'JustifyRight', 'JustifyBlock'],
+                ["Image", "Table", "Link", "Unlink"], ['Undo', 'Redo'], ["Source"],
+                ["Maximize"]]
+    },
+}
