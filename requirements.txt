@@ -1,4 +1,5 @@
 requests==2.18.4
-Django==2.0.1
+Django==2.0.2
 django-ckeditor==5.4.0
 beautifulsoup4==4.6.0
+channels==2.0.2

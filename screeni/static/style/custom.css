@@ -1,7 +1,3 @@
-element {
-  --main-bg-color: brown;
-}
-
 body, html {
   margin: 0px;
   padding: 0px;
@@ -27,12 +23,13 @@ body, html {
 
 h2 {
   color: #002e7d;
-  font-size: 3rem;
+  font-size: 4em;
   margin-top: 21px;
+  font-style: bold;
 }
 
 p {
-  font-size: 1rem;
+  font-size: 1em;
 }
 
 
@@ -46,7 +43,7 @@ p {
 
 /* Wildcard class selector: https://stackoverflow.com/questions/36579625/can-not-resize-the-icons-from-https-github-com-erikflowers-weather-icons*/
 i[class^="wi-"], i[class*=" wi-"] {
-    font-size: 1.5em;
+    font-size: 1.7em;
 }
 
 #header > img {
@@ -56,26 +53,30 @@ i[class^="wi-"], i[class*=" wi-"] {
 }
 
 #date {
-  font-size: 1em;
+  font-size: 1.5em;
   margin: 0;
 }
 
 #time {
-  font-size: 2.1em;
+  font-size: 2.7em;
   margin: 0;
+}
+
+#temperature {
+  font-size: 1.2em;
 }
 
 /* Move time and weather info to top left corner */
 #info-box {
   position: absolute;
   top: 20px;
-  left: 50px;
+  left: 70px;
   color: white;
 }
 
-/* === SIDEBAR ===*/
+/* === EVENT SLIDE ===*/
 
-.sidebar {
+.tmp {
   position: absolute;
   top: 190px;
   width: 32%;
@@ -90,16 +91,21 @@ i[class^="wi-"], i[class*=" wi-"] {
   background-position: center center;
 }
 
+.event-list-container {
+  margin: 0px;
+  width: 100%;
+}
+
 .event-list-container th {
   padding: 40px 25px 18px 25px;
-  font-size: 1.5em;
+  font-size: 3em;
   border-bottom: 1px solid #eee;
 }
 
 .event-list-container td {
   padding: 25px;
   margin: 0;
-  font-size: 1.2em;
+  font-size: 2.5em;
 }
 
 .change-color {
@@ -110,59 +116,33 @@ i[class^="wi-"], i[class*=" wi-"] {
 /* === SLIDES MAIN ===*/
 
 /* Slideshow container */
-.mainslide {
-  position: relative;
-  top: 190px;
-  width: 64%;
+div[class^="contentslide-"], .slide-trello, .slide-restaurant, .slide-events {
+  position: absolute;
+  top: 215px;
+  width: 98%;
   left: 0;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
   right: 0;
   margin: 0px 20px 0px 20px;
   padding: 0px 40px;
-  height: 77vh;
+  height: 76vh;
   border-radius: 5px;
   background: rgba(255,255,255,0.9);
   background-size: cover;
   background-position: center center;
 }
 
+.description-wrapper > p {
+  font-size: 1.4em;
+}
+
 /* Fading animation */
 .fade {
-  position: absolute;
   transition: opacity .4s ease-in;
 }
 
 fade + fade { opacity: 0; }
 
 
-/*=== PROMO SLIDES ===*/
-
-.promo-container h1 {
-  font-size: 5rem;
-  font-weight: 800;
-}
-
-.promo-container p {
-  font-size: 3rem;
-  width: 60%;
-}
-
-.deadline {
-  top: 200px;
-  right: 15%;
-  font-size: 4rem;
-  font-weight: 600;
-}
-
-.promo-img-container {
-  width: 200px;
-  height: 200px;
-}
-
-.promo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 
 /*=== FOOD SLIDE ===*/
 
@@ -178,6 +158,7 @@ fade + fade { opacity: 0; }
 .restaurant-list-container h2 {
   margin: 10px 0px 0px 0px;
   display: inline-block;
+  font-size: 1.5em;
 }
 
 .restaurant-list-container .bold{
@@ -187,6 +168,7 @@ fade + fade { opacity: 0; }
 
 .restaurant-list-container span {
   display: block;
+  font-size: 0.9em;
 }
 
 .restaurant-list-container p {
@@ -222,7 +204,7 @@ fade + fade { opacity: 0; }
 }
 .navbar.app {
   background-color: #002e7d;
-  font-size: 1.2rem;
+  font-size: 1.2em;
   border-radius: 2px;
   margin-bottom: 5px;
 }
@@ -246,7 +228,7 @@ fade + fade { opacity: 0; }
 }
 
 .trello-list-container {
-  width: 350px;
+  width: 397px;
   height: calc(100% - 10px - 17px);
 }
 .trello-list-container > * {
@@ -267,7 +249,7 @@ fade + fade { opacity: 0; }
   max-height: calc(100% - 36px - 36px);
 }
 .trello-list-container li > p {
-  font-size: 1.4em;
+  font-size: 1.5em;
 }
 .trello-list-container ul li {
   background-color: #fff;

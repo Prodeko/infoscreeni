@@ -4,9 +4,11 @@
 {% block slides %}
 {{ block.super }}
 
-  <div class="slides">
-  {% include 'trello.html' %}
+  <div id="slides">
   {% include 'slide.html' %}
+  {% include 'trello.html' %}
+  {% include 'food.html' %}
+  {% include 'events.html' %}
   </div>
 
   {% if context.gif %}

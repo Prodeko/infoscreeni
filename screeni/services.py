@@ -53,7 +53,7 @@ def get_gifs():
     Uses https://api.giphy.com API. See https://developers.giphy.com/docs/ for more information.
     """
     search_term = "friday"
-    url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=20"
+    url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=15"
 
     # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
     try:
@@ -83,7 +83,7 @@ def get_events():
             soup = BeautifulSoup(r.text, 'html.parser')
             data = []
             # Find the main table
-            table = soup.find("table", id="open-table")
+            table = soup.find("div", id="active-div")
             rows = table.find_all('tr')
             for row in rows:
                 # Enumerate table rows
@@ -91,14 +91,19 @@ def get_events():
                 cols = [ele.text.strip() for ele in cols]
                 data.append([ele for ele in cols if ele]) # Get rid of empty values
             data = data[1:6]
-            # Parse event time and ilmo deadline to datetime
-            # and convert back to correctly formatted string
-            for i, l in enumerate(data):
-                l[1] = datetime.strptime(l[1], '%d.%m.%Y %H:%M')
-                l[2] = datetime.strptime(l[2], '%d.%m.%Y %H:%M')
-                l[1] = datetime.strftime(l[1], '%Y-%m-%d %H:%M')
-                l[2] = datetime.strftime(l[2], '%Y-%m-%d %H:%M')
-            return data
+
+            if not data:
+                # If there are no upcoming events return an empty dict
+                return {}
+            else:
+                # Parse event time and ilmo deadline to datetime
+                # and convert back to correctly formatted string
+                for i, l in enumerate(data):
+                    l[1] = datetime.strptime(l[1], '%d.%m.%Y %H:%M')
+                    l[2] = datetime.strptime(l[2], '%d.%m.%Y %H:%M')
+                    l[1] = datetime.strftime(l[1], '%Y-%m-%d %H:%M')
+                    l[2] = datetime.strftime(l[2], '%Y-%m-%d %H:%M')
+                return data
     except requests.exceptions.RequestException as e:
         print(e)
 

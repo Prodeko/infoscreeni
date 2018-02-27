@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function () {
 
   /* Global variables */
   var WEATHER_TIMEOUT = 60000; // 1 minute
@@ -6,7 +6,6 @@ $(document).ready(function() {
   var FOOD_TIMEOUT = 1800000; // 30 minutes
   var EVENT_TIMEOUT = 1800000; // 30 minutes
   var SLIDE_CHANGE_TIMEOUT = 1000;
-  var SLIDE_UPDATE_TIMEOUT = 1000;
   var SLIDE_FADE_TIME = 900; // 0,9 seconds
   var EVENT_HIGHLIGHT_LIMIT = 48;
   var CAROUSEL_ACTIVE = false;
@@ -18,6 +17,21 @@ $(document).ready(function() {
   var urlWeather = "/weather";
   var urlFood = "/food";
   var urlEvents = "/events";
+
+  var SLIDES = {};
+
+  function init(slidesJson) {
+    // Get the json context variable 'slides' passed from
+    // views.py index() and populate the SLIDES js object
+    $.each(slidesJson, function(i, obj) {
+      slideId = obj.pk
+      obj.fields.vanhentuu = moment(obj.fields.vanhentuu).format("DD/MM/YYYY-HH.mm.ss");
+      SLIDES[slideId] = slidesJson[i];
+    });
+    SLIDES[-1] = 'slide-trello'
+    SLIDES[-2] = 'slide-restaurant'
+    SLIDES[-3] = 'slide-events'
+  }
 
   String.prototype.hashCode = function() {
     /* https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery */
@@ -45,6 +59,7 @@ $(document).ready(function() {
 
   function checkCarousel() {
     /* Displays a gif overlay carousel on Friday */
+
     var now = moment();
     var day = now.weekday();
 
@@ -61,13 +76,115 @@ $(document).ready(function() {
     }
   }
 
+  function startWebsocket() {
+    /* Initializes a websocket connection to the server */
+
+    console.log("Starting a websocket connection to the server")
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var ws_path = ws_scheme + '://' + window.location.host;
+    var socket = new WebSocket(ws_path);
+
+    socket.onmessage = function(message) {
+      // console.log("Got websocket message " + message.data);
+      // Decode the JSON
+      var data = JSON.parse(message.data);
+      handleSocketMessage(data); // Handle updates to the slides that the server sends
+    }
+
+    socket.onopen = function open() {
+      // Initial connection to the server is from the client
+      socket.send(JSON.stringify({
+        "command": "join"
+      }));
+      console.log('WebSockets connection created');
+    };
+
+    socket.onclose = function () {
+      console.log("Disconnected from socket");
+    };
+  }
+
+  function handleSocketMessage(data) {
+    slideJson = JSON.parse(data.slide_json);
+    updateType = data.type;
+    slideId = data.slide_id;
+    slide = slides[slideId];
+
+    if (updateType == "init") {
+      init(slideJson);
+    } else if (updateType == "slide.update") {
+      updateSlide(slideId, slideJson);
+    } else if (updateType == "slide.add_new") {
+      addNewSlide(slideId, slideJson);
+    } else if (updateType == "slide.delete") {
+      deleteSlide(slideId);
+    } else {
+      console.log("Unkown websocket command type: " + updateType)
+    }
+  }
+
+  function addNewSlide(slideId, slideJson) {
+    /* Adds a new slide to the DOM */
+    title = slideJson[0].fields.otsikko;
+    description = slideJson[0].fields.teksti;
+    duration = slideJson[0].fields.näyttöaika_sekunteina;
+    expiresAt = slideJson[0].fields.vanhentuu;
+    // Django returns this weird +02:00 format so we have to parse this correctly
+    expiresAt = moment(expiresAt, "YYYY-MM-DDTHH:mm:ss+02:00").format("DD/MM/YYYY-HH.mm.ss");
+    slideJson[0].fields.vanhentuu = expiresAt;
+    SLIDES[slideId] = slideJson[0];
+
+    /* Setup  basic elements */
+    var header = '<h2 class="title">' + title + '</h2>';
+    var text = '<p>' + description +'</p>';
+    var descriptionWrapper = '<div class="description-wrapper">' + text + '</div>';
+    var contentContainer = '<div class="content-container">' + header + '<hr>' + descriptionWrapper + '</div>';
+    var slideFade = '<div class="contentslide-' + slideId +' fade">' + contentContainer + '</div>';
+
+    $('.content-slide-container').append(slideFade);
+  }
+
+  function updateSlide(slideId, updatedSlideJson) {
+    /* Processes the ajax call and updates the slide */
+
+    title = updatedSlideJson[0].fields.otsikko;
+    description = updatedSlideJson[0].fields.teksti;
+    duration = updatedSlideJson[0].fields.näyttöaika_sekunteina;
+    expiresAt = updatedSlideJson[0].fields.vanhentuu;
+    expiresAt = moment(expiresAt).format("DD/MM/YYYY-HH.mm.ss");
+
+    // This is unnecessary
+    slide = SLIDES[slideId];
+
+    slide.fields.otsikko = title;
+    slide.fields.teksti = description;
+    slide.fields.näyttöaika_sekunteina = duration;
+    slide.fields.vanhentuu = expiresAt;
+    //
+
+    slide = $('.contentslide-' + slideId);
+
+    oldTitle = slide.find("h2[class=title]");
+    oldDescription = slide.find("div[class=description-wrapper]");
+
+    oldTitle.html(title)
+    oldDescription.html(description)
+  }
+
+  function deleteSlide(slideId) {
+    delete SLIDES[slideId];
+    $('.contentslide-' + slideId).remove();
+  }
+
   function updateAll() {
-    /* Updates all API based information and the Friday carousel*/
+    /* Updates all API based information and the Friday carousel */
 
     /* Fetch data also at the start, setInterval runs only
     after the interval has passed. getJSON is asynchronous
     so stack the calls to make it synchronous and allow
     the DOM the be fully parsed before starting to scroll */
+    startWebsocket();
+
     $.getJSON(urlFood, function(data) {
         handleFoodQueryResult(data);
         $.getJSON(urlWeather, function(data) {
@@ -80,19 +197,8 @@ $(document).ready(function() {
         });
     });
 
-    $.getJSON('', function(data) {
-      handleSlideUpdates(data);
-    });
-
-
     // Checks if it is Friday and displays some friday gifs
     checkCarousel();
-
-    setInterval(function() {
-      $.getJSON('', function(data) {
-        handleSlideUpdates(data);
-      });
-    }, SLIDE_UPDATE_TIMEOUT);
 
     setInterval(function() {
       $.getJSON(urlWeather, function(data) {
@@ -121,50 +227,11 @@ $(document).ready(function() {
   }
   updateAll();
 
-  function handleSlideUpdates(data) {
-    /* Uses ajax calls to handle updates to django objects
-    for example when we change the title of a slide */
-
-    $.each(data, function(i, obj) {
-      id = obj.pk
-      slide = $('[class*=contentslide-' + id + ']')
-      if (slide.length === 0) {
-        hendleNewSlide(slide, obj);
-      } else {
-        handleExistingSlide(slide, obj);
-      }
-    });
-  }
-
-  function handleExistingSlide(slide, obj) {
-    /* Processes the ajax call and updates the slide */
-    title = obj.fields.title;
-    description = obj.fields.description;
-    duration = obj.fields.display_duration;
-    expires_at = obj.fields.expires_at;
-    expires_at = moment(expires_at).format("DD/MM/YYYY-HH.mm.ss");
-
-    oldtitle = slide.find("h2[class=title]");
-    olddescription = slide.find("div[class=description-wrapper]");
-    old_displayfor_class = slide.attr('class').split(' ')[3];
-    old_expiresat_class = slide.attr('class').split(' ')[4];
-
-    new_displayfor_class = 'displayfor-' + duration;
-    new_expiresat_class = 'expires-' + expires_at;
-
-    // Could do if statements to detect changes but
-    // ran into some bugs while trying that out
-    oldtitle.html(title)
-    olddescription.html(description)
-    slide.removeClass(old_displayfor_class).addClass(new_displayfor_class);
-    slide.removeClass(old_expiresat_class).addClass(new_expiresat_class);
-  }
-
   function handleWeatherQueryResult(data) {
     /* Parses weather JSON data to the DOM
     Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1 */
 
-    if (data.cod == 401) {
+    if (data == null) {
       // Error handling
       $('#temperature-icon').addClass("wi wi-na");
       $('#temperature').html("°C");
@@ -191,16 +258,6 @@ $(document).ready(function() {
     /* Parses the food JSON data to the DOM */
 
     var data = JSON.parse(data);
-
-    /* Setup  basic elements */
-    var rSlideContainer = '<div class="restaurant-slide-container"></div>';
-    var slideFade = '<div class="mainslide fade slide-restaurant"></div>';
-    var rListContainer = '<div class="restaurant-list-container"></div>';
-
-    $('.slides').append(rSlideContainer);
-    $('.restaurant-slide-container').append(slideFade);
-    $('.slide-restaurant').append(rListContainer);
-
     $.each(data, function(r, rData) {
 
         if (rData.menus.length > 0) {  // API sometimes returns no food data for the day
@@ -257,156 +314,158 @@ $(document).ready(function() {
   function handleEventQueryResult(data) {
     /* Parses event JSON data to the DOM */
 
-    $.each(data, function(i, eData) {
+    if ($.isEmptyObject(data)) {
+      $('.slide-events').hide();
+    } else {
+      $('.slide-events').show();
+      $.each(data, function(i, eData) {
 
-      var eventDate = moment(eData[1]);
-      var dl = moment(eData[2]);
+        var eventDate = moment(eData[1]);
+        var dl = moment(eData[2]);
 
-      var now = moment();
-      var durationToDl = moment.duration(dl.diff(now));
-      var hoursToDl = durationToDl.asHours();
+        var now = moment();
+        var durationToDl = moment.duration(dl.diff(now));
+        var hoursToDl = durationToDl.asHours();
 
-      var durationToEvent = moment.duration(eventDate.diff(now));
-      var hoursToEvent = durationToEvent.asHours();
+        var durationToEvent = moment.duration(eventDate.diff(now));
+        var hoursToEvent = durationToEvent.asHours();
 
-      var timeFlagDl = false;
-      if (hoursToDl < EVENT_HIGHLIGHT_LIMIT) {
-        dl = dl.fromNow();
-        timeFlagDl = true;
-      } else {
-        dl = dl.format('DD.MM.YYYY');
-      }
+        var timeFlagDl = false;
+        if (hoursToDl < EVENT_HIGHLIGHT_LIMIT) {
+          dl = dl.fromNow();
+          timeFlagDl = true;
+        } else {
+          dl = dl.format('DD.MM.YYYY');
+        }
 
-      var timeFlagEventDate = false;
-      if (hoursToEvent < EVENT_HIGHLIGHT_LIMIT) {
-        event_date = eventDate.fromNow();
-        timeFlagEventDate = true;
-      } else {
-        eventDate = eventDate.format('DD.MM.YYYY');
-      }
+        var timeFlagEventDate = false;
+        if (hoursToEvent < EVENT_HIGHLIGHT_LIMIT) {
+          event_date = eventDate.fromNow();
+          timeFlagEventDate = true;
+        } else {
+          eventDate = eventDate.format('DD.MM.YYYY');
+        }
 
-      var eName = eData[0]
-      var hash = eName.toLowerCase().hashCodePositive()
+        var eName = eData[0];
+        var hash = eName.toLowerCase().hashCodePositive();
 
-      var eContainer = '<tr class="event-' + hash + '-container"></tr>';
-      var eName = '<td class="event-name">' + eName + '</td>';
-      var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
-      var eDate = '<td class="event-' + hash + '-time">' + eventDate + '</td>';
+        var eListContainer = '<table class="event-list-container"><tr>Tapahtuma<th>Ilmo päättyy</th>Päivämäärä</tr></table>'
+        var eContainer = '<tr class="event-' + hash + '-container"></tr>';
+        var eName = '<td class="event-name">' + eName + '</td>';
+        var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
+        var eDate = '<td class="event-' + hash + '-time">' + eventDate + '</td>';
 
-      $('.event-list-container').append(eContainer);
-      $('.event-' + hash + '-container').append(eName)
-                                        .append(eDl)
-                                        .append(eDate);
+        $('.slide-events').append(eListContainer)
+                          .append(eContainer);
+        $('.event-' + hash + '-container').append(eName)
+                                          .append(eDl)
+                                          .append(eDate);
 
-      if (timeFlagDl) {
-        $('.event-' + hash + '-dl').addClass('change-color');
-      }
+        if (timeFlagDl) {
+          $('.event-' + hash + '-dl').addClass('change-color');
+        }
 
-
-      if (timeFlagEventDate) {
-        $('.event-' + hash + '-time').addClass('change-color');
-      }
-    });
+        if (timeFlagEventDate) {
+          $('.event-' + hash + '-time').addClass('change-color');
+        }
+      });
+    }
   }
 
   function scroll() {
     /* Cycles slides */
 
-    var current = 0;
-    slides = $('.mainslide')
-    slides.eq(current).css('opacity', 1);  // Display first slide right away
+    var i = 0;
+    var prev;
 
-    var start = new Date();
-    run = function() {
+    run = function(prev) {
+
       // Runs at a timeout specified by TIMEOUT,
       // changes the slides by altering their opacity
 
-      slides = $('.mainslide')
+      if (prev !== undefined) { prev.css('opacity', 0); }  // Handle startup
+      var slide_array = $.map(SLIDES, function(value, index) { return [value]; });
 
-      slides.eq(current).css('opacity', 0);
-      current = (current != slides.length - 1) ? current + 1 : 0;
+      slide = slide_array[i]
+      i = (i != slide_array.length - 1) ? i + 1 : 0;
 
-      TIMEOUT = getTimeout(slides, current);
-
-      handleTrelloSlide(slides, current);
-      handleExpiredSlides();
-      handleFoodSlide(slides, current);
-
-      // Just in case...
-      if (current > slides.length) {
-        current = 0
+      try {
+        var TIMEOUT = SLIDE_CHANGE_TIMEOUT;
+        if (slide.model == 'screeni.slide') {
+          cur = $('.contentslide-' + slide.pk)
+          cur.css('opacity', 1);
+          TIMEOUT = handleSlide(slide);
+        } else if (slide == 'slide-trello') {
+          cur = $('.slide-trello')
+          cur.css('opacity', 1);
+          TIMEOUT = SLIDE_CHANGE_TIMEOUT;
+        } else if(slide == 'slide-restaurant') {
+          cur = $('.slide-restaurant')
+          cur.css('opacity', 1);
+          TIMEOUT = handleFoodSlide(slides, i);
+        } else if(slide == 'slide-events') {
+          cur = $('.slide-events')
+          if (!cur.is(":visible")) {
+            TIMEOUT = 0;
+          } else {
+            cur.css('opacity', 1);
+            TIMEOUT = SLIDE_CHANGE_TIMEOUT;
+          }
+        }
+        setTimeout(function() {
+          run(cur);
+        }, TIMEOUT);
       }
-
-      slides.eq(current).css('opacity', 1);
-      setTimeout(run, TIMEOUT)
-    }
-    run();
-  };
-
-  function getTimeout(slides, current) {
-    if (slides.eq(current).is('[class*=displayfor]')) {
-      var arr = slides.eq(current).attr('class').split(' ');
-      var TIMEOUT = arr[arr.length-2].split('-')[1];
-      TIMEOUT = parseInt(TIMEOUT) * 1000; // Convert to milliseconds
-      return TIMEOUT;
-    } else {
-      var TIMEOUT = SLIDE_CHANGE_TIMEOUT;
-      return TIMEOUT;
-    }
-  }
-
-  function handleExpiredSlides() {
-    expr = $("div[class*='expires-']").each(function(i, obj) {  // Select all divs that contain the class 'expires-'
-      var now = moment();
-      var date_str = $(obj).attr('class').split(' ').pop().substring(8, 27) // Get the last class of each div in a form 'DD/MM/YYYY-HH.mm.ss'
-      var expr_datetime = moment(date_str, "DD/MM/YYYY-HH.mm.ss") // Use moment js to parse the date string
-
-      // If time now exceeds the expiration time
-      if (now > expr_datetime) {
-        $(obj).fadeOut(900, function() { $(this).removeClass('mainslide'); });
+      catch(err) {
+      console.log("Error in scroll(): " + err);
+      // This call to run is needed when we delete a
+      // slide and then try to call slide.model
+      run();
       }
-    });
-  }
-
-  function handleTrelloSlide(slides, current) {
-    /* Handle Trello slide (aka sidebar hiding and showing) */
-    if (slides.eq(current).hasClass('slide-trello')) {
-      $(".sidebar").hide();
-    } else {
-      $(".sidebar").fadeIn(SLIDE_FADE_TIME);
     }
+  run();
   }
 
-  function handleFoodSlide(slides, current) {
+  function handleSlide() {
+    var slideId = slide.pk;
+    var now = moment();
+    var expiresAt = moment(slide.fields.vanhentuu, 'DD/MM/YYYY-HH.mm.ss');
+
+    if (now > expiresAt) {
+      $('.contentslide-' + slideId).hide();
+      return 0 // Change slide immediately if expired
+    }
+    $('.contentslide-' + slideId).show();
+    return slide.fields.näyttöaika_sekunteina * 1000;
+  }
+
+  function handleFoodSlide() {
     /* Handle restaurant slide updating */
     var d = new Date();
     var hour = d.getHours();
+    var n = 0;
 
-    if (slides.eq(current).hasClass('slide-restaurant')) {
-      var openHours = $('.r-hours-open');
-      for (var j = 0; j < openHours.length; j++) {
-        opens = openHours.eq(j).html().substring(0, 2);
-        closes = openHours.eq(j).html().substring(8, 10);
+    $('.r-hours-open').each(function(i, elem) {
+      opens = elem.innerHTML.substring(0, 2);
+      closes = elem.innerHTML.substring(8, 10);
 
-        if (hour >= closes) {
-          // If a restaurant has closed don't show it's menu
-          openHours.eq(j)
-          .closest(".grid-item")
-          .fadeOut(SLIDE_FADE_TIME, function() { $(this).hide(); });
-        }
+      if (hour >= closes) {
+        // If a restaurant has closed don't show it's menu
+        $(elem)
+        .closest('.grid-item')
+        .fadeOut(SLIDE_FADE_TIME, function() { $(this).hide(); });
+        n += 1;
       }
+    });
 
-      // Finally check if all restaurants have closed
-      var all = true;
-      $('.restaurant-list-container').each( function(index, value) {
-        all = all & ($(value).children().length > 1);
-      });
-      if (all == 0) {
-        $('.restaurant-list-container')
-        .closest(".restaurant-slide-container")
-        .remove();
-      }
+    n_restaurants = $('.restaurant-list-container').children().length;
+    if (n == n_restaurants || hour > 19 || hour < 8) {
+      $('.restaurant-list-container')
+      .closest('.slide-restaurant')
+      .hide();
+      return 0;
     }
+    return SLIDE_CHANGE_TIMEOUT;
   }
 
   function refreshAt(hours, minutes, seconds) {

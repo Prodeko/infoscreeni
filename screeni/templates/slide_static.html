@@ -4,14 +4,14 @@
 {% block slides %}
 {{ block.super }}
 
-{% if content %}
+{% if slide %}
 <div class="slide-container">
   <div class="mainslide fade">
     <div class="content-container">
-      <h2>{{ content.title }}</h2>
+      <h2>{{ slide.title }}</h2>
       <hr>
       <div class="description-wrapper">
-        <p>{{ content.description|safe }}</p>
+        <p>{{ slide.description|safe }}</p>
       </div>
     </div>
   </div>

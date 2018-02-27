@@ -1,28 +1,19 @@
-from django.core import serializers
 from django.http import HttpResponse
+from django.core import serializers
 from django.shortcuts import render
-from django.utils import timezone
 from screeni.models import *
 import json
 import screeni.services as services
 
 def index(request):
-    now = timezone.now()
-    if request.is_ajax():
-        content = Slide.objects.filter(expires_at__gte=now)
-        content = serializers.serialize('json', content)
-
-        return HttpResponse(content, content_type="application/json")
-
-    # Don't display expired slides
-    content = Slide.objects.filter(expires_at__gte=now)
+    content = Slide.objects.all()
     trello = services.get_trello()
     gif = services.get_gifs()
 
     context = {}
     context['content'] = content
-    context['trello'] = trello
     context['gif'] = gif
+    context['trello'] = trello
     return render(request, "slides.html", { 'context': context })
 
 def weather(request):
@@ -50,5 +41,8 @@ def static_slide(request, id):
 
     This view is rendered when a user presses the 'View on site' button in Django admin
     """
-    content = Slide.objects.get(id=id)
-    return render(request, "slide_static.html", { 'content': content})
+    slides = Slide.objects.get(id=id)
+    slides_json = serializers.serialize('json', [slides], ensure_ascii=False)
+    context = {}
+    context['slides'] = slides_json
+    return render(request, "slide_static.html", { 'context': context})

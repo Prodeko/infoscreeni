@@ -1,16 +1,16 @@
-{% if context.content %}
-  <div class="content-slide-container">
+<div class="content-slide-container">
+  {% if context.content %}
     {% for c in context.content %}
       {# Don't change the order of the classess, they are used to handle expired slides and slide display duration #}
-      <div class="mainslide contentslide-{{c.id}} fade displayfor-{{c.display_duration}} expires-{{c.expires_at|date:"d/m/Y-H.i.s"}}">
+      <div class="contentslide-{{c.id}} fade">
         <div class="content-container">
-          <h2 class="title">{{ c.title }}</h2>
+          <h2 class="title">{{ c.otsikko }}</h2>
           <hr>
           <div class="description-wrapper">
-            <p>{{ c.description|safe }}</p>
+            <p>{{ c.teksti|safe }}</p>
           </div>
         </div>
       </div>
     {% endfor %}
-  </div>
-{% endif %}
+  {% endif %}
+</div>
