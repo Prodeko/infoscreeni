@@ -4,11 +4,11 @@ $(function () {
    * Global variables
    * Timeouts are in milliseconds
    */
-  const WEATHER_TIMEOUT = 60000;
+  const WEATHER_TIMEOUT = 60000; // 1 minute
   const CAROUSEL_TIMEOUT = 6000;
   const FOOD_TIMEOUT = 1800000; // 30 minutes
-  const EVENT_TIMEOUT = 10000; // 30 minutes
-  const SLIDE_CHANGE_TIMEOUT = 1000;
+  const EVENT_TIMEOUT = 1800000; // 30 minutes
+  const SLIDE_CHANGE_TIMEOUT = 12000;
   const SLIDE_FADE_TIME = 900; // 0,9 seconds
   const EVENT_HIGHLIGHT_LIMIT = 48;
   const urlWeather = "/weather";
@@ -309,6 +309,9 @@ $(function () {
    */
   function handleFoodQueryResult(data) {
     var data = JSON.parse(data);
+
+    // Clear prior information
+    $('.restaurant-list-container').empty();
     $.each(data, function(r, rData) {
 
         // API sometimes returns no data for the day
@@ -375,7 +378,7 @@ $(function () {
       // Don't show event slide if data is empty
       $('.slide-events').hide();
     } else {
-      //$('.slide-events').empty(); // When updating
+      $('.slide-events').empty(); // When updating
       $('.slide-events').show();
       $.each(data, function(i, eData) {
         var eventDate = moment(eData[1]);
