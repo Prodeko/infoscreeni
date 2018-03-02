@@ -53,7 +53,7 @@ def get_gifs():
     Uses https://api.giphy.com API. See https://developers.giphy.com/docs/ for more information.
     """
     search_term = "friday"
-    url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=15"
+    url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=6"
 
     # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
     try:

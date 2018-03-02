@@ -30,9 +30,27 @@ $ wget http://download.redis.io/releases/redis-4.0.8.tar.gz
 $ tar xzf redis-4.0.8.tar.gz
 $ cd redis-4.0.8
 $ make
+$ sudo make install
 ```
 
 Redis serverin ajo: `redis-server`
+
+## Raspberry Pi asennus
+
+```
+$ sudo apt-get update && sudo apt-get upgrade   # Update packages
+$ sudo apt-get install libjpeg-dev              # Image processing
+$ pip install asgi_redis                        # Apparently this does not get installed automatically with channels
+$ sudo apt-get install ttf-ancient-fonts        # Unicode emojis for Chromium browser
+```
+
+NTP ei osannut ottaa oikeaa aikaa, tässä vielä selvittelyä...
+
+```
+sudo /etc/init.d/ntp stop
+sudo ntpd -q -g
+sudo /etc/init.d/ntp start
+```
 
 ## Ominaisuudet
 

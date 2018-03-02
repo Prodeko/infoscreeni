@@ -262,7 +262,7 @@ $(function () {
     var now = moment();
     var day = now.weekday();
 
-    if (day == 5 && now.hours() >= 17) { // 4 = friday
+    if (day == 4 && now.hours() >= 17) { // 4 = friday
       if (!CAROUSEL_ACTIVE) {
         $('.carousel-item').first().addClass('active');
         $('.carousel').carousel({
