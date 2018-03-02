@@ -24,7 +24,6 @@ def get_weather():
         print(e)
 
 
-
 def get_food():
     """ Fetches daily food information from Otaniemi student restaurants.
 
@@ -46,6 +45,7 @@ def get_food():
             print(e)
 
     return json.dumps(food_data)
+
 
 def get_gifs():
     """ Fetches a party gif for Friday
@@ -89,7 +89,7 @@ def get_events():
                 # Enumerate table rows
                 cols = row.find_all('td')
                 cols = [ele.text.strip() for ele in cols]
-                data.append([ele for ele in cols if ele]) # Get rid of empty values
+                data.append([ele for ele in cols if ele])   # Get rid of empty values
             data = data[1:6]
 
             if not data:
@@ -106,6 +106,7 @@ def get_events():
                 return data
     except requests.exceptions.RequestException as e:
         print(e)
+
 
 def get_trello():
     """ Fetches Trello cards from a spcefied board
@@ -146,12 +147,12 @@ def get_board_lists(api_key, api_token, board_id):
         print(e)
 
 
-def get_list_cards(api_key,api_token, list_id):
+def get_list_cards(api_key, api_token, list_id):
     url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=name,labels&key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)
-        data = r.json()[:5] # Don't get all of the cards
+        data = r.json()[:5]  # Don't get all of the cards
         return data
     except requests.exceptions.RequestException as e:
         print(e)

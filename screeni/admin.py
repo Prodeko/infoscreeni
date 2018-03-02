@@ -11,6 +11,7 @@ class SlideModelAdmin(admin.ModelAdmin):
         url = reverse('slide-static', kwargs={'id': obj.id})
         return url
 
+
 # Change admin template texts
 admin.site.site_header = 'Infoscreen ohjauspaneeli'
 admin.site.index_title = ''

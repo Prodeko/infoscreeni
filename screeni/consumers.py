@@ -26,10 +26,10 @@ class SlideConsumer(AsyncJsonWebsocketConsumer):
         content = Slide.objects.all()
         slides_json = serializers.serialize('json', content, ensure_ascii=False)
         await self.send_json(
-        {
-            "type": "init",
-            "slide_json": slides_json
-        })
+            {
+                "type": "init",
+                "slide_json": slides_json
+            })
 
     async def slide_update(self, event, **kwargs):
         await self.send_json(event)
@@ -46,6 +46,7 @@ class SlideConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name,
         )
 
+
 @receiver(post_save, sender=Slide)
 def slide_update(sender, instance, created, **kwargs):
     if created:
@@ -54,9 +55,11 @@ def slide_update(sender, instance, created, **kwargs):
     else:
         send_event_to_channel_layer("slide.update", instance)
 
+
 @receiver(post_delete, sender=Slide)
 def slide_delete(sender, instance, **kwargs):
     send_event_to_channel_layer("slide.delete", instance)
+
 
 def send_event_to_channel_layer(event_type, instance):
     channel_layer = get_channel_layer()

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+import configparser
 import os
 
 # Needed since we have 'django.contrib.sites' enabled in INSTALLED_APPS
@@ -26,7 +27,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
-import configparser
 config = configparser.ConfigParser()
 config.read('secret.ini')
 
@@ -145,10 +145,9 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': [["Format", "Styles" "Bold", "Italic", "Underline", "Strike"],
-                ['NumberedList', 'BulletedList', "Indent", "Outdent", 'JustifyLeft', 'JustifyCenter',
-                 'JustifyRight', 'JustifyBlock'],
-                ["Image", "Table", "Link", "Unlink"], ['Undo', 'Redo'], ["Source"],
-                ["Maximize"]]
+                    ['NumberedList', 'BulletedList', "Indent", "Outdent", 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                    ["Image", "Table", "Link", "Unlink"], ['Undo', 'Redo'], ["Source"],
+                    ["Maximize"]]
     },
 }
 # Channel settings

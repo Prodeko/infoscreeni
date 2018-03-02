@@ -76,21 +76,6 @@ i[class^="wi-"], i[class*=" wi-"] {
 
 /* === EVENT SLIDE ===*/
 
-.tmp {
-  position: absolute;
-  top: 190px;
-  width: 32%;
-  left: 64%;  /* https://stackoverflow.com/questions/9998260/css-absolute-position-wont-work-with-margin-leftauto-margin-right-auto */
-  right: 0;
-  margin: 0px 20px 0px 40px;
-  padding: 0px 15px;
-  height: 77vh;
-  border-radius: 5px;
-  background: rgba(255,255,255,0.9);
-  background-size: cover;
-  background-position: center center;
-}
-
 .event-list-container {
   margin: 0px;
   width: 100%;
@@ -111,6 +96,10 @@ i[class^="wi-"], i[class*=" wi-"] {
 .change-color {
   color: #e0423a;
   font-weight: bold;
+}
+
+th {
+  color: #002e7d;
 }
 
 /* === SLIDES MAIN ===*/

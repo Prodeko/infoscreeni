@@ -1,44 +1,35 @@
 $(function () {
 
-  /* Global variables */
-  var WEATHER_TIMEOUT = 60000; // 1 minute
-  var CAROUSEL_TIMEOUT = 6000;
-  var FOOD_TIMEOUT = 1800000; // 30 minutes
-  var EVENT_TIMEOUT = 1800000; // 30 minutes
-  var SLIDE_CHANGE_TIMEOUT = 1000;
-  var SLIDE_FADE_TIME = 900; // 0,9 seconds
-  var EVENT_HIGHLIGHT_LIMIT = 48;
+  /**
+   * Global variables
+   * Timeouts are in milliseconds
+   */
+  const WEATHER_TIMEOUT = 60000;
+  const CAROUSEL_TIMEOUT = 6000;
+  const FOOD_TIMEOUT = 1800000; // 30 minutes
+  const EVENT_TIMEOUT = 10000; // 30 minutes
+  const SLIDE_CHANGE_TIMEOUT = 1000;
+  const SLIDE_FADE_TIME = 900; // 0,9 seconds
+  const EVENT_HIGHLIGHT_LIMIT = 48;
+  const urlWeather = "/weather";
+  const urlFood = "/food";
+  const urlEvents = "/events";
   var CAROUSEL_ACTIVE = false;
-
-  // Refreshes the page at 1 second past midnight
-  // to fetch new Trello and ilmokilke information
-  refreshAt(00, 00, 1);
-
-  var urlWeather = "/weather";
-  var urlFood = "/food";
-  var urlEvents = "/events";
-
+  // Global variable to hold slide information
   var SLIDES = {};
 
-  function init(slidesJson) {
-    // Get the json context variable 'slides' passed from
-    // views.py index() and populate the SLIDES js object
-    $.each(slidesJson, function(i, obj) {
-      slideId = obj.pk
-      obj.fields.vanhentuu = moment(obj.fields.vanhentuu).format("DD/MM/YYYY-HH.mm.ss");
-      SLIDES[slideId] = slidesJson[i];
-    });
-    SLIDES[-1] = 'slide-trello'
-    SLIDES[-2] = 'slide-restaurant'
-    SLIDES[-3] = 'slide-events'
-  }
+  /**
+    * Refreshes the page at 1 second past midnight
+    * to fetch new Trello and ilmokilke information
+    */
+  refreshAt(00, 00, 1);
 
+
+  // Hashing function used to generate unique classes to divs
   String.prototype.hashCode = function() {
-    /* https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery */
-    /* Hashing function used to generate unique classes to divs */
-
+    /* from https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery */
     if (Array.prototype.reduce) {
-      return this.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+      return this.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a;},0);
     } else {
       var hash = 0, i, chr, len;
       if (this.length == 0) return hash;
@@ -51,48 +42,33 @@ $(function () {
     }
   };
 
+  // Generates a positive integer hash
   String.prototype.hashCodePositive = function() {
-    /* Generates a positive integer hash */
-
     return (this.hashCode() + 2147483647) + 1;
   };
 
-  function checkCarousel() {
-    /* Displays a gif overlay carousel on Friday */
 
-    var now = moment();
-    var day = now.weekday();
-
-    if (day == 4 && now.hours() >= 17) { // 4 = friday
-      if (!CAROUSEL_ACTIVE) {
-        $('.carousel-item').first().addClass('active');
-        $('.carousel').carousel({
-          interval: 5000
-        });
-        CAROUSEL_ACTIVE = true
-      }
-    } else {
-      $('#gif-container').hide();
-    }
-  }
-
+  /**
+   * Initializes a websocket connection to the server.
+   *
+   * After initialization, calls handleSocketMessage on new messages.
+   */
   function startWebsocket() {
-    /* Initializes a websocket connection to the server */
-
-    console.log("Starting a websocket connection to the server")
+    console.log("Starting a websocket connection to the server");
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var ws_path = ws_scheme + '://' + window.location.host;
     var socket = new WebSocket(ws_path);
 
     socket.onmessage = function(message) {
-      // console.log("Got websocket message " + message.data);
       // Decode the JSON
       var data = JSON.parse(message.data);
-      handleSocketMessage(data); // Handle updates to the slides that the server sends
-    }
 
+      // Handle updates to the slides that the server sends
+      handleSocketMessage(data);
+    };
+
+    // Initial connection to the server is from the client
     socket.onopen = function open() {
-      // Initial connection to the server is from the client
       socket.send(JSON.stringify({
         "command": "join"
       }));
@@ -104,6 +80,29 @@ $(function () {
     };
   }
 
+
+  /**
+    * Initializes the global variable SLIDES.
+    *
+    * Called when a client initializes a websocket connection to the server.
+    */
+  function init(slidesJson) {
+    $.each(slidesJson, function(i, obj) {
+      slideId = obj.pk;
+      obj.fields.vanhentuu = moment(obj.fields.vanhentuu).format("DD/MM/YYYY-HH.mm.ss");
+      SLIDES[slideId] = slidesJson[i];
+    });
+    SLIDES[-1] = 'slide-trello';
+    SLIDES[-2] = 'slide-restaurant';
+    SLIDES[-3] = 'slide-events';
+  }
+
+
+  /**
+   * Handle incoming websocket messages.
+   *
+   * Accepted message types: 'init', 'slide.update', 'slide.add_new', 'slide.delete'
+   */
   function handleSocketMessage(data) {
     slideJson = JSON.parse(data.slide_json);
     updateType = data.type;
@@ -119,22 +118,28 @@ $(function () {
     } else if (updateType == "slide.delete") {
       deleteSlide(slideId);
     } else {
-      console.log("Unkown websocket command type: " + updateType)
+      console.log("Unkown websocket command type: " + updateType);
     }
   }
 
+
+  /**
+   * Adds a new slide to the DOM.
+   *
+   * Processes the 'slide.add_new' websocket command.
+   */
   function addNewSlide(slideId, slideJson) {
-    /* Adds a new slide to the DOM */
     title = slideJson[0].fields.otsikko;
     description = slideJson[0].fields.teksti;
     duration = slideJson[0].fields.näyttöaika_sekunteina;
     expiresAt = slideJson[0].fields.vanhentuu;
-    // Django returns this weird +02:00 format so we have to parse this correctly
+
+    // Django returns datetimes in this weird +02:00 format so we have to parse it correctly
     expiresAt = moment(expiresAt, "YYYY-MM-DDTHH:mm:ss+02:00").format("DD/MM/YYYY-HH.mm.ss");
     slideJson[0].fields.vanhentuu = expiresAt;
     SLIDES[slideId] = slideJson[0];
 
-    /* Setup  basic elements */
+    // Setup  basic elements
     var header = '<h2 class="title">' + title + '</h2>';
     var text = '<p>' + description +'</p>';
     var descriptionWrapper = '<div class="description-wrapper">' + text + '</div>';
@@ -144,8 +149,13 @@ $(function () {
     $('.content-slide-container').append(slideFade);
   }
 
+
+  /**
+   * Updates an existing slide.
+   *
+   * Processes the 'slide.update' websocket command.
+   */
   function updateSlide(slideId, updatedSlideJson) {
-    /* Processes the ajax call and updates the slide */
 
     title = updatedSlideJson[0].fields.otsikko;
     description = updatedSlideJson[0].fields.teksti;
@@ -163,28 +173,41 @@ $(function () {
     //
 
     slide = $('.contentslide-' + slideId);
-
     oldTitle = slide.find("h2[class=title]");
     oldDescription = slide.find("div[class=description-wrapper]");
 
-    oldTitle.html(title)
-    oldDescription.html(description)
+    oldTitle.html(title);
+    oldDescription.html(description);
   }
 
+
+  /**
+   * Deletes an existing slide.
+   *
+   * Processes the 'slide.delete' websocket command
+   */
   function deleteSlide(slideId) {
     delete SLIDES[slideId];
     $('.contentslide-' + slideId).remove();
   }
 
-  function updateAll() {
-    /* Updates all API based information and the Friday carousel */
 
-    /* Fetch data also at the start, setInterval runs only
-    after the interval has passed. getJSON is asynchronous
-    so stack the calls to make it synchronous and allow
-    the DOM the be fully parsed before starting to scroll */
+  /**
+   * Updates all API based information and the Friday carousel.
+   *
+   * Fetches information from urls /food, /weather, /events and
+   * handles each query.
+   */
+  function updateAll() {
+    // initialize a websocket connection to the server
     startWebsocket();
 
+    /**
+     * Fetch data also at the start, setInterval runs only
+     * after the interval has passed. getJSON is asynchronous
+     * so stack the calls to make it synchronous and allow
+     * the DOM the be fully parsed before starting to scroll.
+     */
     $.getJSON(urlFood, function(data) {
         handleFoodQueryResult(data);
         $.getJSON(urlWeather, function(data) {
@@ -197,29 +220,31 @@ $(function () {
         });
     });
 
-    // Checks if it is Friday and displays some friday gifs
+    // Checks if it is Friday and if so, display gif overlay
     checkCarousel();
 
+    // Update weather information periodically
     setInterval(function() {
       $.getJSON(urlWeather, function(data) {
           handleWeatherQueryResult(data);
       });
     }, WEATHER_TIMEOUT);
 
+    // Update food information periodically
     setInterval(function() {
       $.getJSON(urlFood, function(data) {
           handleFoodQueryResult(data);
       });
     }, FOOD_TIMEOUT);
 
+    // Update event information periodically
     setInterval(function() {
       $.getJSON(urlEvents, function(data) {
-          $.when(handleEventQueryResult(data)).done(function () {
-            scroll();
-          });
+        handleEventQueryResult(data);
       });
     }, EVENT_TIMEOUT);
 
+    // Check gif overlay condition periodically
     setInterval(function() {
       checkCarousel();
     }, CAROUSEL_TIMEOUT);
@@ -227,15 +252,40 @@ $(function () {
   }
   updateAll();
 
-  function handleWeatherQueryResult(data) {
-    /* Parses weather JSON data to the DOM
-    Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1 */
 
+  /**
+   * Displays a gif overlay carousel.
+   *
+   * Gifs are displayed if it's Friday over 5 o'clock.
+   */
+  function checkCarousel() {
+    var now = moment();
+    var day = now.weekday();
+
+    if (day == 5 && now.hours() >= 17) { // 4 = friday
+      if (!CAROUSEL_ACTIVE) {
+        $('.carousel-item').first().addClass('active');
+        $('.carousel').carousel({
+          interval: 5000
+        });
+        CAROUSEL_ACTIVE = true;
+      }
+    } else {
+      $('#gif-container').hide();
+    }
+  }
+
+
+  /**
+   * Parses weather JSON data fetched from /weather to the DOM.
+   *
+   * Credits: https://gist.github.com/tbranyen/62d974681dea8ee0caa1
+   */
+  function handleWeatherQueryResult(data) {
+    // Error handling
     if (data == null) {
-      // Error handling
       $('#temperature-icon').addClass("wi wi-na");
       $('#temperature').html("°C");
-
     } else {
       var prefix = 'wi wi-';
       var code = data.weather[0].id;
@@ -254,16 +304,18 @@ $(function () {
   }
 
 
+  /**
+   * Parses food JSON data fetched from /food to the DOM.
+   */
   function handleFoodQueryResult(data) {
-    /* Parses the food JSON data to the DOM */
-
     var data = JSON.parse(data);
     $.each(data, function(r, rData) {
 
-        if (rData.menus.length > 0) {  // API sometimes returns no food data for the day
+        // API sometimes returns no data for the day
+        if (rData.menus.length > 0) {
           var today = new Date();
           var i = today.getDay(); // getDay() returns the day of the week (from Sunday 0 to Monday 6) for the specified date
-          i = i == 0 ? 6 : i-1;  // Convert Sunday to 6 and other dates to correct indices
+          i = i == 0 ? 6 : i-1;   // Convert Sunday to 6 and other dates to correct indices
 
           var rContainer = '<div class="restaurant-container-' + r + ' grid-item grid-restaurant""></div>';
           var rHeader = '<div class="restaurant-header-' + r + '"><h2>' + r + '</h2></div>';
@@ -275,35 +327,39 @@ $(function () {
                                          .append(rBody);
           $('.restaurant-header-' + r).append(hoursOpen);
 
-          /* Get unique courseGroupNames */
+          // Array to hold unique courseGroupNames
           var arr = [];
 
           $.each(rData.menus['0'].courses, function(key, value) {
-            // Do some string manipulation to extract the menu items group
-            // example title field in the JSON: 'KASVISLOUNAS: Kasvisnuudeleita'
-            // we wish to extract the 'KASVISLOUNAS' part from this string and store
-            // it in an array.
+            /**
+             * Do some string manipulation to extract the menu items group
+             * example title field in the JSON: 'KASVISLOUNAS: Kasvisnuudeleita'
+             * we wish to extract the 'KASVISLOUNAS' part from this string and store
+             * it in an array.
+             */
             var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
             arr.push(courseGroupName);
           });
           // Get unique courseGroupNames
           var courseGroupNames = unique(arr);
 
-          /* Append courseGroupName to restaurant-body */
+          // Append courseGroupName to restaurant-body
           $.each(courseGroupNames, function(index, name) {
             // Generate a positive integer hash from the groupname
             var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>';
             $('.restaurant-body-' + r).append(courseGroup);
           });
 
-
-          /* Append courseText to corresponding group */
+          // Append courseText to corresponding group
           $.each(rData.menus['0'].courses, function(key, value) {
             var courseGroupName = value.title.substr(0, value.title.indexOf(':'));
             var courseText = value.title.substr(value.title.indexOf(':') + 1, value.title.length);
             var courseGroupText = '<span>' + courseText + '</span>';
-            // Again generate the hash but this time match to the class
-            // created above and append the corresponding courseText
+
+            /**
+             * Again generate the hash but this time match to the class
+             * created above and append the corresponding courseText
+             */
             $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
           });
         }
@@ -311,35 +367,37 @@ $(function () {
   }
 
 
+  /**
+   * Parses event JSON data fetched from /events to the DOM.
+   */
   function handleEventQueryResult(data) {
-    /* Parses event JSON data to the DOM */
-
     if ($.isEmptyObject(data)) {
+      // Don't show event slide if data is empty
       $('.slide-events').hide();
     } else {
+      //$('.slide-events').empty(); // When updating
       $('.slide-events').show();
       $.each(data, function(i, eData) {
-
         var eventDate = moment(eData[1]);
         var dl = moment(eData[2]);
-
         var now = moment();
         var durationToDl = moment.duration(dl.diff(now));
         var hoursToDl = durationToDl.asHours();
-
         var durationToEvent = moment.duration(eventDate.diff(now));
         var hoursToEvent = durationToEvent.asHours();
-
         var timeFlagDl = false;
+        var timeFlagEventDate = false;
+
         if (hoursToDl < EVENT_HIGHLIGHT_LIMIT) {
+          // Less than EVENT_HIGHLIGHT_LIMIT hours to the event signup deadline
           dl = dl.fromNow();
           timeFlagDl = true;
         } else {
           dl = dl.format('DD.MM.YYYY');
         }
 
-        var timeFlagEventDate = false;
         if (hoursToEvent < EVENT_HIGHLIGHT_LIMIT) {
+          // Less than EVENT_HIGHLIGHT_LIMIT hours to the event
           event_date = eventDate.fromNow();
           timeFlagEventDate = true;
         } else {
@@ -348,63 +406,73 @@ $(function () {
 
         var eName = eData[0];
         var hash = eName.toLowerCase().hashCodePositive();
-
-        var eListContainer = '<table class="event-list-container"><tr>Tapahtuma<th>Ilmo päättyy</th>Päivämäärä</tr></table>'
+        var eListContainer = '<table class="event-list-container"><tr><th>Tapahtuma</th><th>Ilmo päättyy</th><th>Päivämäärä</th></tr></table>';
         var eContainer = '<tr class="event-' + hash + '-container"></tr>';
         var eName = '<td class="event-name">' + eName + '</td>';
         var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
         var eDate = '<td class="event-' + hash + '-time">' + eventDate + '</td>';
 
-        $('.slide-events').append(eListContainer)
-                          .append(eContainer);
-        $('.event-' + hash + '-container').append(eName)
-                                          .append(eDl)
-                                          .append(eDate);
+        $('.slide-events').append(eListContainer);
+        $('.event-list-container > tbody').append(eContainer);
+        $('.event-' + hash + '-container').append(eName).
+                                           append(eDl).
+                                           append(eDate);
 
         if (timeFlagDl) {
+          /**
+           * Less than EVENT_HIGHLIGHT_LIMIT hours to the event signup deadline
+           * add a class that highlights the element.
+           */
           $('.event-' + hash + '-dl').addClass('change-color');
         }
 
         if (timeFlagEventDate) {
+          /**
+           * Less than EVENT_HIGHLIGHT_LIMIT hours to the event
+           * add a class that highlights the element.
+           */
           $('.event-' + hash + '-time').addClass('change-color');
         }
       });
     }
   }
 
-  function scroll() {
-    /* Cycles slides */
 
+  /**
+   * Cycle the slides continuously.
+   */
+  function scroll() {
     var i = 0;
     var prev;
 
+    /**
+     * Cycle the slides at a specified timeout.
+     *
+     * Slides are changed by altering their opacity.
+     */
     run = function(prev) {
-
-      // Runs at a timeout specified by TIMEOUT,
-      // changes the slides by altering their opacity
-
       if (prev !== undefined) { prev.css('opacity', 0); }  // Handle startup
       var slide_array = $.map(SLIDES, function(value, index) { return [value]; });
 
-      slide = slide_array[i]
+      slide = slide_array[i];
       i = (i != slide_array.length - 1) ? i + 1 : 0;
 
       try {
         var TIMEOUT = SLIDE_CHANGE_TIMEOUT;
         if (slide.model == 'screeni.slide') {
-          cur = $('.contentslide-' + slide.pk)
+          cur = $('.contentslide-' + slide.pk);
           cur.css('opacity', 1);
           TIMEOUT = handleSlide(slide);
         } else if (slide == 'slide-trello') {
-          cur = $('.slide-trello')
+          cur = $('.slide-trello');
           cur.css('opacity', 1);
           TIMEOUT = SLIDE_CHANGE_TIMEOUT;
         } else if(slide == 'slide-restaurant') {
-          cur = $('.slide-restaurant')
+          cur = $('.slide-restaurant');
           cur.css('opacity', 1);
           TIMEOUT = handleFoodSlide(slides, i);
         } else if(slide == 'slide-events') {
-          cur = $('.slide-events')
+          cur = $('.slide-events');
           if (!cur.is(":visible")) {
             TIMEOUT = 0;
           } else {
@@ -422,10 +490,16 @@ $(function () {
       // slide and then try to call slide.model
       run();
       }
-    }
+    };
   run();
   }
 
+
+  /**
+   * Handle slides added from /admin.
+   *
+   * Expired slides are hidden. Returns a timeout for the slide.
+   */
   function handleSlide() {
     var slideId = slide.pk;
     var now = moment();
@@ -433,12 +507,19 @@ $(function () {
 
     if (now > expiresAt) {
       $('.contentslide-' + slideId).hide();
-      return 0 // Change slide immediately if expired
+      return 0; // Change slide immediately if expired
     }
     $('.contentslide-' + slideId).show();
     return slide.fields.näyttöaika_sekunteina * 1000;
   }
 
+
+  /**
+   * Handle the food slide.
+   *
+   * Closed restaurants are removed from the DOM and if all
+   * restaurants have closed for the day the slide is hidden.
+   */
   function handleFoodSlide() {
     /* Handle restaurant slide updating */
     var d = new Date();
@@ -468,6 +549,12 @@ $(function () {
     return SLIDE_CHANGE_TIMEOUT;
   }
 
+
+  /**
+   * Refreshes the page at a specified time.
+   *
+   * Credits: https://stackoverflow.com/questions/1217929/how-to-automatically-reload-a-web-page-at-a-certain-time
+   */
   function refreshAt(hours, minutes, seconds) {
     var now = new Date();
     var then = new Date();
@@ -485,9 +572,13 @@ $(function () {
     setTimeout(function() { window.location.reload(true); }, timeout);
   }
 
+
+  /**
+   * Given an array, returs all unique members in the array, as an array.
+   *
+   * Credits: https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript
+   */
   function unique(arr) {
-    // Get unique elements in an array
-    /* https://stackoverflow.com/questions/11688692/most-elegant-way-to-create-a-list-of-unique-items-in-javascript */
     var u = {}, a = [];
     for(var i = 0, l = arr.length; i < l; ++i){
       if(!u.hasOwnProperty(arr[i])) {
@@ -498,9 +589,13 @@ $(function () {
     return a;
   }
 
+
+  /**
+   * Capitalizes the first letter of a string.
+   *
+   * Credits: https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
+   */
   function capitalizeFirstLetter(str) {
-    // Capitalize only the first letter of a string
-    /* https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript */
     if (str.length > 0) {
       return str[0].toUpperCase() + str.substr(1).toLowerCase();
     } else {
@@ -874,5 +969,5 @@ $(function () {
       "label": "hurricane",
       "icon": "cloudy-gusts"
     }
-  }
+  };
 });

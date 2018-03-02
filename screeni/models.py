@@ -3,6 +3,7 @@ from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
 import datetime
 
+
 class Slide(models.Model):
     def __str__(self):  # Changes object name on Django admin
         return self.otsikko
@@ -18,7 +19,6 @@ class Slide(models.Model):
     def get_absolute_url(self, obj):
         """ Get objects’ URL without the domain name"""
         return "slide/%i/" % self.id
-
 
     id = models.AutoField(primary_key=True)
     # Use finnish names to match localization in Django admin
