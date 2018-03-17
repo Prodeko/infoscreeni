@@ -378,8 +378,13 @@ $(function () {
       // Don't show event slide if data is empty
       $('.slide-events').hide();
     } else {
+
       $('.slide-events').empty(); // When updating
       $('.slide-events').show();
+
+      var eListContainer = '<table class="event-list-container"><tr><th>Tapahtuma</th><th>Ilmo päättyy</th><th>Päivämäärä</th></tr></table>';
+      $('.slide-events').append(eListContainer);
+
       $.each(data, function(i, eData) {
         var eventDate = moment(eData[1]);
         var dl = moment(eData[2]);
@@ -409,13 +414,13 @@ $(function () {
 
         var eName = eData[0];
         var hash = eName.toLowerCase().hashCodePositive();
-        var eListContainer = '<table class="event-list-container"><tr><th>Tapahtuma</th><th>Ilmo päättyy</th><th>Päivämäärä</th></tr></table>';
+
         var eContainer = '<tr class="event-' + hash + '-container"></tr>';
         var eName = '<td class="event-name">' + eName + '</td>';
         var eDl = '<td class="event-' + hash + '-dl">' + dl + '</td>';
         var eDate = '<td class="event-' + hash + '-time">' + eventDate + '</td>';
 
-        $('.slide-events').append(eListContainer);
+
         $('.event-list-container > tbody').append(eContainer);
         $('.event-' + hash + '-container').append(eName).
                                            append(eDl).
