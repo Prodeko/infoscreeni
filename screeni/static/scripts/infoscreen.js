@@ -4,13 +4,13 @@ $(function () {
    * Global variables
    * Timeouts are in milliseconds
    */
-  const WEATHER_TIMEOUT = 60000; // 1 minute
+  const WEATHER_TIMEOUT = 600000; // 10 minutes
   const CAROUSEL_TIMEOUT = 6000;
   const FOOD_TIMEOUT = 1800000; // 30 minutes
   const EVENT_TIMEOUT = 1800000; // 30 minutes
   const SLIDE_CHANGE_TIMEOUT = 12000;
   const SLIDE_FADE_TIME = 900; // 0,9 seconds
-  const EVENT_HIGHLIGHT_LIMIT = 48;
+  const EVENT_HIGHLIGHT_LIMIT = 48; // 48 hours to the event and the event text shows up red
   const urlWeather = "/weather";
   const urlFood = "/food";
   const urlEvents = "/events";
@@ -23,7 +23,6 @@ $(function () {
     * to fetch new Trello and ilmokilke information
     */
   refreshAt(00, 00, 1);
-
 
   // Hashing function used to generate unique classes to divs
   String.prototype.hashCode = function() {
@@ -77,6 +76,9 @@ $(function () {
 
     socket.onclose = function () {
       console.log("Disconnected from socket");
+      setTimeout(function() {
+        startWebsocket();
+      }, 5000);
     };
   }
 
