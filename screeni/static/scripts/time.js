@@ -3,7 +3,7 @@ $(document).ready(function() {
 
   function startTime() {
     var date = moment().format('D.M.YYYY');
-    var time = moment().format('h:mm:ss');
+    var time = moment().format('HH:mm:ss');
     $('#date').html(date);
     $('#time').html(time);
     var t = setTimeout(startTime, 1000);
