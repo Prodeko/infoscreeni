@@ -7,14 +7,17 @@ $(function () {
   const WEATHER_TIMEOUT = 600000; // 10 minutes
   const CAROUSEL_TIMEOUT = 6000;
   const FOOD_TIMEOUT = 1800000; // 30 minutes
+  const FOOD_SLIDE_TIMEOUT = 3000; // 30 seconds
   const EVENT_TIMEOUT = 1800000; // 30 minutes
-  const SLIDE_CHANGE_TIMEOUT = 12000;
+  const SLIDE_CHANGE_TIMEOUT = 1200;
   const SLIDE_FADE_TIME = 900; // 0,9 seconds
   const EVENT_HIGHLIGHT_LIMIT = 48; // 48 hours to the event and the event text shows up red
   const urlWeather = "/weather";
   const urlFood = "/food";
   const urlEvents = "/events";
+  const EXCLUDED_COURSE_GROUPNAMES = ["Deli-salaatti ja keitto", "Jälkiruoka"];
   var CAROUSEL_ACTIVE = false;
+
   // Global variable to hold slide information
   var SLIDES = {};
 
@@ -316,6 +319,8 @@ $(function () {
     $('.restaurant-list-container').empty();
     $.each(data, function(r, rData) {
 
+        console.log(rData)
+
         // API sometimes returns no data for the day
         if (rData.menus.length > 0) {
           var today = new Date();
@@ -347,12 +352,16 @@ $(function () {
           });
           // Get unique courseGroupNames
           var courseGroupNames = unique(arr);
+          console.log(courseGroupNames)
 
           // Append courseGroupName to restaurant-body
           $.each(courseGroupNames, function(index, name) {
             // Generate a positive integer hash from the groupname
             var courseGroup = '<div class="courselist-coursegroup-' + name.toLowerCase().hashCodePositive() + '" ><p>' + capitalizeFirstLetter(name) + '</p></div>';
-            $('.restaurant-body-' + r).append(courseGroup);
+            console.log(name)
+            if(!(EXCLUDED_COURSE_GROUPNAMES.indexOf(name) >= 0)) {
+              $('.restaurant-body-' + r).append(courseGroup);
+            }
           });
 
           // Append courseText to corresponding group
@@ -365,7 +374,9 @@ $(function () {
              * Again generate the hash but this time match to the class
              * created above and append the corresponding courseText
              */
-            $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
+            if(!(EXCLUDED_COURSE_GROUPNAMES.indexOf(courseGroupName) >= 0)) {
+              $('.courselist-coursegroup-' + courseGroupName.toLowerCase().hashCodePositive()).append(courseGroupText);
+            }
           });
         }
       });
@@ -556,7 +567,7 @@ $(function () {
       .hide();
       return 0;
     }
-    return SLIDE_CHANGE_TIMEOUT;
+    return FOOD_SLIDE_TIMEOUT;
   }
 
 

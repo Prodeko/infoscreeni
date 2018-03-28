@@ -29,7 +29,7 @@ def get_food():
 
     Uses https://kitchen.kanttiinit.fi API. See https://github.com/Kanttiinit/kitchen for more information.
     """
-    restaurant_dict = {2: "T-talo", 5: "Alvari", 7: "TUAS", 45: "Dipoli"}
+    restaurant_dict = {2: "T-talo", 3: "Täffä", 7: "TUAS", 45: "Dipoli"}
     url = "https://kitchen.kanttiinit.fi/restaurants/"
     today = datetime.today().strftime('%Y-%m-%d')
     food_data = {}
@@ -152,7 +152,7 @@ def get_list_cards(api_key, api_token, list_id):
 
     try:
         r = requests.get(url)
-        data = r.json()[:5]  # Don't get all of the cards
+        data = r.json()[:3]  # Don't get all of the cards
         return data
     except requests.exceptions.RequestException as e:
         print(e)

@@ -23,13 +23,14 @@ body, html {
 
 h2 {
   color: #002e7d;
-  font-size: 4em;
+  font-size: 4.3em;
   margin-top: 21px;
   font-style: bold;
 }
 
 p {
-  font-size: 1em;
+  font-size: 1.3em;
+  font-weight: 600;
 }
 
 
@@ -91,6 +92,7 @@ i[class^="wi-"], i[class*=" wi-"] {
   padding: 25px;
   margin: 0;
   font-size: 2.5em;
+  font-weight: 600;
 }
 
 .change-color {
@@ -121,7 +123,8 @@ div[class^="contentslide-"], .slide-trello, .slide-restaurant, .slide-events {
 }
 
 .description-wrapper > p {
-  font-size: 1.4em;
+  font-size: 1.6em;
+  font-weight: 600;
 }
 
 /* Fading animation */
@@ -148,6 +151,7 @@ fade + fade { opacity: 0; }
   margin: 10px 0px 0px 0px;
   display: inline-block;
   font-size: 1.5em;
+  font-weight: 900;
 }
 
 .restaurant-list-container .bold{
@@ -157,14 +161,17 @@ fade + fade { opacity: 0; }
 
 .restaurant-list-container span {
   display: block;
-  font-size: 0.9em;
+  font-size: 1.3em;
+  font-weight: 600;
 }
 
 .restaurant-list-container p {
   margin: 10px 0px 0px 0px;
   display: block;
-  font-size: 0.6em;
+  font-size: 0.9em;
   color: grey;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 
@@ -193,7 +200,8 @@ fade + fade { opacity: 0; }
 }
 .navbar.app {
   background-color: #002e7d;
-  font-size: 1.2em;
+  font-size: 2.0em;
+  font-weight: 900;
   border-radius: 2px;
   margin-bottom: 5px;
 }
@@ -217,7 +225,7 @@ fade + fade { opacity: 0; }
 }
 
 .trello-list-container {
-  width: 397px;
+  width: 398px;
   height: calc(100% - 10px - 17px);
 }
 .trello-list-container > * {
@@ -231,6 +239,7 @@ fade + fade { opacity: 0; }
   font-weight: bold;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  font-size: 1.5em;
 }
 .trello-list-container ul {
   list-style: none;
@@ -238,13 +247,16 @@ fade + fade { opacity: 0; }
   max-height: calc(100% - 36px - 36px);
 }
 .trello-list-container li > p {
-  font-size: 1.5em;
+  font-size: 1.6em;
+  font-weight: 600;
 }
 .trello-list-container ul li {
   background-color: #fff;
   border-bottom: 1px solid #ccc;
   padding: 10px;
   border-radius: 3px;
+  font-weight: 600;
+  font-size: 1.1em;
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
@@ -265,7 +277,7 @@ span[class^="trello-label-"] {
   padding: 0 8px;
   border-radius: 4px;
   color: white;
-  font-size: 0.8em;
+  font-size: 1.3em;
 }
 
 .trello-label-pink {
