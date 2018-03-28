@@ -7,9 +7,9 @@ $(function () {
   const WEATHER_TIMEOUT = 600000; // 10 minutes
   const CAROUSEL_TIMEOUT = 6000;
   const FOOD_TIMEOUT = 1800000; // 30 minutes
-  const FOOD_SLIDE_TIMEOUT = 3000; // 30 seconds
+  const FOOD_SLIDE_TIMEOUT = 30000; // 30 seconds
   const EVENT_TIMEOUT = 1800000; // 30 minutes
-  const SLIDE_CHANGE_TIMEOUT = 1200;
+  const SLIDE_CHANGE_TIMEOUT = 12000;
   const SLIDE_FADE_TIME = 900; // 0,9 seconds
   const EVENT_HIGHLIGHT_LIMIT = 48; // 48 hours to the event and the event text shows up red
   const urlWeather = "/weather";
