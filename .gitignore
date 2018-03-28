@@ -58,6 +58,9 @@ var/
 *.manifest
 *.spec
 
+# Virtual environments
+venv
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -87,6 +90,7 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
+static/
 
 # Custom
 .env
@@ -96,3 +100,4 @@ infoscreeni/__pycache__/
 secret.ini
 infoscreen_env/
 screeni/migrations/
+
