@@ -38,7 +38,7 @@ TRELLO_TOKEN = config['TRELLO']['TOKEN']
 GIPHY_KEY = config['GIPHY']['KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config['DJANGO']['DEBUG']
 
 ALLOWED_HOSTS = ['localhost']
 

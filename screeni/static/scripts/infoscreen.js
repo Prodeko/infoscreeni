@@ -319,8 +319,6 @@ $(function () {
     $('.restaurant-list-container').empty();
     $.each(data, function(r, rData) {
 
-        console.log(rData)
-
         // API sometimes returns no data for the day
         if (rData.menus.length > 0) {
           var today = new Date();
