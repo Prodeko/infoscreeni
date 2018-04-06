@@ -13,7 +13,8 @@ def get_weather():
     Uses OpenWeatherMap API. See https://openweathermap.org/api for more information.
     """
     city_id = "643522"
-    url = "http://api.openweathermap.org/data/2.5/weather?id=" + city_id + "&units=metric&APPID=" + settings.WEATHER_KEY
+    url = "http://api.openweathermap.org/data/2.5/weather?id=" + \
+        city_id + "&units=metric&APPID=" + settings.WEATHER_KEY
 
     # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
     try:
@@ -53,7 +54,8 @@ def get_gifs():
     Uses https://api.giphy.com API. See https://developers.giphy.com/docs/ for more information.
     """
     search_term = "friday"
-    url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=6"
+    url = "http://api.giphy.com/v1/gifs/search?api_key=" + \
+        settings.GIPHY_KEY + "&q=" + search_term + "&limit=6"
 
     # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
     try:
@@ -65,6 +67,27 @@ def get_gifs():
         return url_list
     except requests.exceptions.RequestException as e:
         print(e)
+
+    # Function that takes the a bs4 object and name of a div as parameters, and returns a
+    # list of interesting elements in that div. Doing this with independent function allows
+    # us to fetch current, upcoming, and hot events without boilerplate code
+def get_event_container(soup: BeautifulSoup, div_name: str) -> list:
+    data = []
+    # Find the main table
+    try:
+        table = soup.find("div", id=div_name)
+        rows = table.find_all('tr')
+        for row in rows:
+            # Enumerate table rows
+            cols = row.find_all('td')
+            cols = [ele.text.strip() for ele in cols]
+            # Get rid of empty values
+            data.append([ele for ele in cols if ele])
+        data = data[1:]
+    #if there is no div of the expected name, rows becomes nonetype
+    except AttributeError:
+        pass
+    return data
 
 
 def get_events():
@@ -81,16 +104,19 @@ def get_events():
             # Parsing a table to a Python list with BeautifulSoup:
             # https://stackoverflow.com/questions/23377533/python-beautifulsoup-parsing-table
             soup = BeautifulSoup(r.text, 'html.parser')
-            data = []
-            # Find the main table
-            table = soup.find("div", id="active-div")
-            rows = table.find_all('tr')
-            for row in rows:
-                # Enumerate table rows
-                cols = row.find_all('td')
-                cols = [ele.text.strip() for ele in cols]
-                data.append([ele for ele in cols if ele])   # Get rid of empty values
-            data = data[1:6]
+
+            # not 100% sure this was the name of the div for hot events
+            hot_events = get_event_container(soup, "kiltis-div")
+            # hot events are tagged with *hot* tags
+            for event in hot_events:
+                event[0] = "*HOT* " + event[0]
+            active_events = get_event_container(soup, "active-div")
+            upcoming_events = get_event_container(soup, "upcoming-div")
+
+            # currently the view lists 5 events in total, prioritizing hot events over
+            # active events. something more dynamic should probably be developed
+            # for the upcoming/hot/active distinction
+            data = (hot_events + active_events)[:5]
 
             if not data:
                 # If there are no upcoming events return an empty dict
@@ -137,7 +163,8 @@ def get_trello():
 
 
 def get_board_lists(api_key, api_token, board_id):
-    url = "https://api.trello.com/1/boards/" + board_id + "/lists?key=" + api_key + "&" + "token=" + api_token
+    url = "https://api.trello.com/1/boards/" + board_id + \
+        "/lists?key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)
@@ -148,7 +175,8 @@ def get_board_lists(api_key, api_token, board_id):
 
 
 def get_list_cards(api_key, api_token, list_id):
-    url = "https://api.trello.com/1/lists/" + list_id + "/cards" + "?fields=name,labels&key=" + api_key + "&" + "token=" + api_token
+    url = "https://api.trello.com/1/lists/" + list_id + "/cards" + \
+        "?fields=name,labels&key=" + api_key + "&" + "token=" + api_token
 
     try:
         r = requests.get(url)
