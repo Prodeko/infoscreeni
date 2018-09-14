@@ -29,7 +29,7 @@ def get_food():
 
     Uses https://kitchen.kanttiinit.fi API. See https://github.com/Kanttiinit/kitchen for more information.
     """
-    restaurant_dict = {2: "T-talo", 3: "Täffä", 7: "TUAS", 45: "Dipoli"}
+    restaurant_dict = {2: "T-talo", 3: "Täffä", 7: "TUAS", 42: "A Bloc"}
     url = "https://kitchen.kanttiinit.fi/restaurants/"
     today = datetime.today().strftime('%Y-%m-%d')
     food_data = {}
@@ -52,7 +52,7 @@ def get_gifs():
 
     Uses https://api.giphy.com API. See https://developers.giphy.com/docs/ for more information.
     """
-    search_term = "friday"
+    search_term = "cats"
     url = "http://api.giphy.com/v1/gifs/search?api_key=" + settings.GIPHY_KEY + "&q=" + search_term + "&limit=6"
 
     # 'Correct' requests error handling: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
